@@ -54,6 +54,26 @@ sources:
 - What does "higher quality products" mean in the AI-assisted context?
 - The "tools will solve what tools created" claim — can you back it up with examples?
 
+## Raw captures (2026-03-17 to 2026-03-18)
+
+### On discourse economics
+"AI hype has an obvious commercial incentive, but anti AI behavior does not. It still feels like reflexive hate. Is it really grassroots reaction or is there commercial incentive? Is it being driven by some larger economic interest beyond anxiety from regular people?"
+
+### On engagement-driven polarization
+"Both sides are terrible. When it comes to AI discussions, the same vehicle that optimizes for engagement is operating in hyperspace. We have unproductive anti-AI flag bearers, alongside breathless hype and optimism from the same crowd that brought you the word 'synergy.'"
+
+### On juniors and intuition
+"What does 'junior' look like in light of AI tools? Everyone says it's the end of juniors, wouldn't juniors just start by using AI, and develop a different intuition?"
+
+### On workflow proliferation
+"Everyone seems to have their own AI oriented workflows. Is the proliferation of custom skills and custom written software just 'more of the same' or has the new level of customizability increased the net unique workflows?"
+
+### On AI code review
+"If you feel like you have to review AI generated code all the time, your time is better spent updating your code quality guidelines for CLAUDE.md"
+
+### On anthropomorphizing AI (potential spin-off post)
+"Blog post idea: anthropomorphizing AI agents, AI psychosis, interacting with AI systems. I don't like to anthropomorphize them, and trying to figure out how to refer to them (pronouns, etc)"
+
 ## Possible structure
 
 1. The current camps (Slop Queens, Bitter Artists, Productivity Evangelists)
