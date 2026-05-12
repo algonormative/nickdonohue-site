@@ -73,8 +73,8 @@ npm run preview   # local preview of production build
 
 ## Deploy
 
-GitHub Pages, source = GitHub Actions, repo `chronick/website` (public). The workflow at `.github/workflows/deploy.yml` runs `npm ci && npm run build` and uploads `dist/` to Pages. Auto-deploys on push to `main`. Custom domain `nickdonohue.net` (set via `public/CNAME` + GitHub Pages settings).
+GitHub Pages, source = GitHub Actions, repo `chronick/chronick.github.io` (public). The workflow at `.github/workflows/deploy.yml` runs `npm ci && npm run build` and uploads `dist/` to Pages. Auto-deploys on push to `main`. Custom domain `nickdonohue.net` (set via `public/CNAME` + GitHub Pages settings).
 
-PostHog analytics need the `PUBLIC_POSTHOG_KEY` repository secret — `gh secret set PUBLIC_POSTHOG_KEY --repo chronick/website` once available. The PostHog component is gated on `import.meta.env.PROD && Boolean(apiKey)` so absence is fine.
+PostHog analytics need the `PUBLIC_POSTHOG_KEY` repository secret — `gh secret set PUBLIC_POSTHOG_KEY --repo chronick/chronick.github.io` once available. The PostHog component is gated on `import.meta.env.PROD && Boolean(apiKey)` so absence is fine.
 
 The chronick.net 301-redirect Worker lives under `.cloudflare/redirect/` — `wrangler deploy` to ship. Cloudflare hosts the redirect; GitHub Pages hosts the site itself.
