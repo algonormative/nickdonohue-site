@@ -1,0 +1,76 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const title = `Not found · ${SITE_TITLE}`;
+const description = 'This page does not exist.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="not-found">
+				<p class="code">404</p>
+				<h1>Nothing lives here</h1>
+				<p class="lede">
+					The page you were looking for has moved, never existed, or was a typo. If you
+					followed a link from somewhere, that link is probably out of date — apologies.
+				</p>
+				<ul class="suggestions">
+					<li><a href="/">Back to the homepage</a></li>
+					<li><a href="/blog">Browse the blog</a></li>
+					<li><a href="/projects">See projects</a></li>
+					<li><a href="/rss.xml">Subscribe via RSS</a></li>
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.not-found {
+		padding: var(--space-2xl) 0;
+		text-align: left;
+		max-width: 38em;
+	}
+	.code {
+		font-family: var(--font-mono);
+		font-size: var(--step-5);
+		color: var(--accent);
+		margin: 0 0 var(--space-s);
+		line-height: 1;
+		letter-spacing: -0.02em;
+	}
+	h1 {
+		font-size: var(--step-3);
+		margin: 0 0 var(--space-m);
+	}
+	.lede {
+		font-size: var(--step-1);
+		color: var(--muted);
+		line-height: 1.5;
+		margin: 0 0 var(--space-l);
+	}
+	.suggestions {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3xs);
+		font-family: var(--font-mono);
+		font-size: 0.95rem;
+	}
+	.suggestions li::before {
+		content: '→ ';
+		color: var(--muted);
+	}
+</style>

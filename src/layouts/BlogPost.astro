@@ -8,79 +8,126 @@ import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, draft, tags } = Astro.props;
 ---
 
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
 	</head>
 
 	<body>
 		<Header />
 		<main>
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+				{heroImage && (
+					<figure class="hero-image wide">
+						<Image width={1200} height={600} src={heroImage} alt="" />
+					</figure>
+				)}
+				<div class="post-meta">
+					<FormattedDate date={pubDate} />
+					{updatedDate && (
+						<span class="updated">
+							· updated <FormattedDate date={updatedDate} />
+						</span>
+					)}
+					{draft && <span class="draft-badge">draft</span>}
 				</div>
+				<h1>{title}</h1>
+				{description && <p class="lede">{description}</p>}
+				<hr />
 				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
 					<slot />
 				</div>
+				{tags && tags.length > 0 && (
+					<footer class="post-footer">
+						<ul class="tags">
+							{tags.map((tag) => <li>#{tag}</li>)}
+						</ul>
+					</footer>
+				)}
 			</article>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	article {
+		padding: var(--space-l) 0;
+	}
+	.hero-image {
+		margin: 0 0 var(--space-l);
+	}
+	.hero-image img {
+		display: block;
+		width: 100%;
+		height: auto;
+		border-radius: var(--radius-m);
+		border: 1px solid var(--rule);
+	}
+	.post-meta {
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		color: var(--muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: var(--space-s);
+	}
+	.updated {
+		text-transform: none;
+		letter-spacing: 0;
+		margin-left: var(--space-2xs);
+	}
+	.draft-badge {
+		display: inline-block;
+		font-size: 0.7rem;
+		padding: 0.1em 0.4em;
+		margin-left: var(--space-2xs);
+		border: 1px solid var(--accent);
+		color: var(--accent);
+		border-radius: var(--radius-s);
+	}
+	h1 {
+		margin: 0 0 var(--space-m);
+		font-size: var(--step-4);
+		letter-spacing: -0.02em;
+	}
+	.lede {
+		font-size: var(--step-1);
+		color: var(--muted);
+		line-height: 1.5;
+		margin: 0 0 var(--space-l);
+	}
+	.prose :global(p) {
+		margin-bottom: var(--space-m);
+	}
+	.prose :global(h2),
+	.prose :global(h3) {
+		margin-top: var(--space-xl);
+	}
+	.prose :global(img) {
+		display: block;
+		margin: var(--space-l) auto;
+		border-radius: var(--radius-m);
+	}
+	.post-footer {
+		margin-top: var(--space-2xl);
+		padding-top: var(--space-m);
+		border-top: 1px solid var(--rule);
+	}
+	.tags {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2xs);
+	}
+	.tags > li {
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		color: var(--muted);
+	}
+</style>

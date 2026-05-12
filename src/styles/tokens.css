@@ -1,0 +1,108 @@
+/*
+  Theme tokens. Two themes — both first-class.
+  Body font: serif (Atkinson, loaded in global.css).
+  Chrome/code: Menlo (system mono).
+  Accent: a single neon-green that shifts per theme so contrast holds.
+*/
+
+:root {
+	/* Type */
+	--font-body: "Atkinson", "Iowan Old Style", "Charter", Georgia, ui-serif, serif;
+	--font-mono: Menlo, Monaco, "Cascadia Code", "Source Code Pro", Consolas, monospace;
+	--font-display: var(--font-mono);
+
+	/* Modular scale (1.25) */
+	--step--1: 0.8rem;
+	--step-0: 1rem;
+	--step-1: 1.25rem;
+	--step-2: 1.563rem;
+	--step-3: 1.953rem;
+	--step-4: 2.441rem;
+	--step-5: 3.052rem;
+
+	/* Spacing */
+	--space-3xs: 0.25rem;
+	--space-2xs: 0.5rem;
+	--space-xs: 0.75rem;
+	--space-s: 1rem;
+	--space-m: 1.5rem;
+	--space-l: 2rem;
+	--space-xl: 3rem;
+	--space-2xl: 5rem;
+
+	/* Measure */
+	--measure: 68ch;
+	--measure-wide: 96ch;
+
+	/* Radii */
+	--radius-s: 2px;
+	--radius-m: 4px;
+}
+
+/* Light theme — warm off-white, deep ink, muted lime accent */
+:root,
+[data-theme="light"] {
+	--bg: #f7f5f2;
+	--bg-elev: #ffffff;
+	--fg: #1a1a1e;
+	--muted: #6b6b75;
+	--rule: #d9d4cc;
+	--accent: #4f6b00;
+	--accent-hover: #3a5000;
+	--accent-fg: #f7f5f2;
+	--code-bg: #ece8e1;
+	--code-fg: #1a1a1e;
+	--selection-bg: rgba(79, 107, 0, 0.18);
+
+	/* Tag palette — muted variants on light */
+	--tag-cyan: #2c7878;
+	--tag-pink: #a13568;
+	--tag-lime: #4f6b00;
+	--tag-orange: #9b5400;
+	--tag-purple: #5a3a80;
+}
+
+/* Dark theme — patchlab-derived, but no scanlines/glow */
+[data-theme="dark"] {
+	--bg: #0d0d14;
+	--bg-elev: #14141c;
+	--fg: #e0e0e0;
+	--muted: #888899;
+	--rule: #1f1f28;
+	--accent: #ccff00;
+	--accent-hover: #b8e600;
+	--accent-fg: #0d0d14;
+	--code-bg: #14141c;
+	--code-fg: #e0e0e0;
+	--selection-bg: rgba(204, 255, 0, 0.22);
+
+	/* Tag palette — vivid on dark */
+	--tag-cyan: #5ab8b8;
+	--tag-pink: #c94a8a;
+	--tag-lime: #ccff00;
+	--tag-orange: #ff9933;
+	--tag-purple: #b370d9;
+}
+
+/* System preference fallback when no explicit theme is set */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme]) {
+		--bg: #0d0d14;
+		--bg-elev: #14141c;
+		--fg: #e0e0e0;
+		--muted: #888899;
+		--rule: #1f1f28;
+		--accent: #ccff00;
+		--accent-hover: #b8e600;
+		--accent-fg: #0d0d14;
+		--code-bg: #14141c;
+		--code-fg: #e0e0e0;
+		--selection-bg: rgba(204, 255, 0, 0.22);
+
+		--tag-cyan: #5ab8b8;
+		--tag-pink: #c94a8a;
+		--tag-lime: #ccff00;
+		--tag-orange: #ff9933;
+		--tag-purple: #b370d9;
+	}
+}

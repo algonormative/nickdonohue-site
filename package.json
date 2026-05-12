@@ -13,6 +13,13 @@
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "astro": "^5.17.1",
+    "katex": "^0.16.45",
+    "posthog-js": "^1.373.2",
     "sharp": "^0.34.3"
+  },
+  "devDependencies": {
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
+    "remark-toc": "^9.0.0"
   }
 }

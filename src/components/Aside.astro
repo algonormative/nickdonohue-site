@@ -1,0 +1,42 @@
+---
+// Pull quote / epigraph / call-out.
+// Usage in MDX:
+//   <Aside cite="Marshall McLuhan">The medium is the message.</Aside>
+//   <Aside>Standalone callout text.</Aside>
+interface Props {
+	cite?: string;
+}
+const { cite } = Astro.props;
+---
+
+<aside class="aside">
+	<div class="aside-body"><slot /></div>
+	{cite && <div class="aside-cite">— {cite}</div>}
+</aside>
+
+<style>
+	.aside {
+		margin: var(--space-l) 0;
+		padding: var(--space-m) var(--space-l);
+		border-left: 3px solid var(--accent);
+		background: var(--bg-elev);
+		font-family: var(--font-body);
+	}
+	.aside-body {
+		font-size: var(--step-1);
+		line-height: 1.4;
+		color: var(--fg);
+	}
+	.aside-body :global(p) {
+		margin: 0 0 var(--space-s);
+	}
+	.aside-body :global(p:last-child) {
+		margin-bottom: 0;
+	}
+	.aside-cite {
+		margin-top: var(--space-s);
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+</style>

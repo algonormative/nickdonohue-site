@@ -1,0 +1,18 @@
+---
+const apiKey = import.meta.env.PUBLIC_POSTHOG_KEY;
+const apiHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com';
+const enabled = import.meta.env.PROD && Boolean(apiKey);
+---
+
+{enabled && (
+	<script define:vars={{ apiKey, apiHost }}>
+		import('posthog-js').then(({ default: posthog }) => {
+			posthog.init(apiKey, {
+				api_host: apiHost,
+				person_profiles: 'always',
+				capture_pageview: true,
+				capture_pageleave: true,
+			});
+		});
+	</script>
+)}

@@ -1,0 +1,132 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import projects from '../data/projects.json';
+
+const title = `Projects · ${SITE_TITLE}`;
+const description = 'Things I have built — personal tools for music, art, and thinking.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<header class="page-header">
+				<h1>Projects</h1>
+				<p class="lede">
+					Personal tools and experiments. Most are in active use; a few are archived or
+					on pause. Source on <a href="https://github.com/chronick">GitHub</a>.
+				</p>
+			</header>
+
+			<ul class="projects">
+				{projects.map((project) => (
+					<li>
+						<article>
+							<header class="card-header">
+								<h2><a href={project.href}>{project.name}</a></h2>
+								<p class="tagline">{project.tagline}</p>
+							</header>
+							<p class="blurb">{project.blurb}</p>
+							{project.tags && project.tags.length > 0 && (
+								<ul class="tags">
+									{project.tags.map((tag) => <li>{tag}</li>)}
+								</ul>
+							)}
+						</article>
+					</li>
+				))}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.page-header {
+		padding: var(--space-l) 0;
+		border-bottom: 1px solid var(--rule);
+		margin-bottom: var(--space-xl);
+	}
+	.page-header h1 {
+		margin: 0 0 var(--space-s);
+		font-size: var(--step-4);
+	}
+	.lede {
+		font-size: var(--step-1);
+		color: var(--muted);
+		margin: 0;
+		max-width: 38em;
+		line-height: 1.5;
+	}
+
+	.projects {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		gap: var(--space-m);
+		grid-template-columns: 1fr;
+	}
+	.projects > li article {
+		padding: var(--space-m);
+		border: 1px solid var(--rule);
+		border-radius: var(--radius-m);
+		transition: border-color 80ms ease;
+	}
+	.projects > li article:hover {
+		border-color: var(--accent);
+	}
+
+	.card-header {
+		margin-bottom: var(--space-s);
+	}
+	.card-header h2 {
+		font-family: var(--font-mono);
+		font-size: var(--step-1);
+		margin: 0 0 var(--space-3xs);
+		font-weight: 700;
+	}
+	.card-header h2 a {
+		color: var(--fg);
+		text-decoration: none;
+	}
+	.card-header h2 a:hover {
+		color: var(--accent);
+	}
+	.tagline {
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		color: var(--muted);
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	.blurb {
+		margin: 0 0 var(--space-s);
+		line-height: 1.6;
+	}
+
+	.tags {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3xs);
+	}
+	.tags > li {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		color: var(--muted);
+		padding: 0.15em 0.5em;
+		border: 1px solid var(--rule);
+		border-radius: var(--radius-s);
+	}
+</style>

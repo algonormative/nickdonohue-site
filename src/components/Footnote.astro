@@ -1,0 +1,51 @@
+---
+// Gwern-style sidenote. Renders as a margin note on wide screens,
+// falls back to inline italics on narrow screens.
+// Usage in MDX:
+//   <Footnote>This is a side note about the previous sentence.</Footnote>
+---
+
+<span class="sidenote-wrap">
+	<span class="sidenote"><slot /></span>
+</span>
+
+<style>
+	.sidenote-wrap {
+		position: relative;
+		display: inline;
+	}
+	.sidenote {
+		display: inline;
+		font-family: var(--font-mono);
+		font-size: 0.82rem;
+		color: var(--muted);
+		line-height: 1.4;
+	}
+	.sidenote::before {
+		content: " (";
+	}
+	.sidenote::after {
+		content: ") ";
+	}
+
+	@media (min-width: 1100px) {
+		.sidenote-wrap {
+			display: inline;
+		}
+		.sidenote {
+			position: absolute;
+			right: -16rem;
+			top: 0;
+			width: 14rem;
+			text-align: left;
+			display: block;
+			padding-left: var(--space-s);
+			border-left: 2px solid var(--rule);
+			font-style: normal;
+		}
+		.sidenote::before,
+		.sidenote::after {
+			content: none;
+		}
+	}
+</style>

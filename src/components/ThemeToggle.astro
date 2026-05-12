@@ -1,0 +1,76 @@
+---
+// Theme toggle. Reads/writes localStorage and flips data-theme on <html>.
+// The initial theme is applied pre-paint by an inline script in BaseHead.astro
+// to avoid a flash of incorrect theme.
+---
+
+<button
+	type="button"
+	class="theme-toggle"
+	aria-label="Toggle theme"
+	data-theme-toggle
+>
+	<span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀</span>
+	<span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">☾</span>
+</button>
+
+<style>
+	.theme-toggle {
+		appearance: none;
+		background: transparent;
+		border: 1px solid var(--rule);
+		color: var(--fg);
+		font-family: var(--font-mono);
+		font-size: 0.9rem;
+		padding: 0.3em 0.55em;
+		border-radius: var(--radius-s);
+		cursor: pointer;
+		line-height: 1;
+		transition: border-color 80ms ease, color 80ms ease;
+	}
+	.theme-toggle:hover,
+	.theme-toggle:focus-visible {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	.theme-toggle:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	.theme-toggle__icon {
+		display: none;
+	}
+	:global([data-theme="light"]) .theme-toggle__icon--moon,
+	:global(html:not([data-theme="dark"])) .theme-toggle__icon--moon {
+		display: inline;
+	}
+	:global([data-theme="dark"]) .theme-toggle__icon--sun {
+		display: inline;
+	}
+	@media (prefers-color-scheme: dark) {
+		:global(html:not([data-theme])) .theme-toggle__icon--moon {
+			display: none;
+		}
+		:global(html:not([data-theme])) .theme-toggle__icon--sun {
+			display: inline;
+		}
+	}
+</style>
+
+<script is:inline>
+	(() => {
+		const btn = document.querySelector("[data-theme-toggle]");
+		if (!btn) return;
+		const root = document.documentElement;
+		btn.addEventListener("click", () => {
+			const current =
+				root.getAttribute("data-theme") ||
+				(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+			const next = current === "dark" ? "light" : "dark";
+			root.setAttribute("data-theme", next);
+			try {
+				localStorage.setItem("theme", next);
+			} catch (_) {}
+		});
+	})();
+</script>

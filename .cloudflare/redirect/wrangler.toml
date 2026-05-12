@@ -1,0 +1,10 @@
+name = "chronick-redirect"
+main = "src/index.js"
+compatibility_date = "2026-05-12"
+
+# Bind the worker to all requests on chronick.net and www.chronick.net.
+# Each route lives on the chronick.net zone.
+routes = [
+	{ pattern = "chronick.net/*", zone_name = "chronick.net" },
+	{ pattern = "www.chronick.net/*", zone_name = "chronick.net" },
+]

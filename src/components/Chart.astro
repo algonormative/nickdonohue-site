@@ -1,0 +1,65 @@
+---
+// Chart wrapper. Pass any chart content (inline SVG, Observable Plot output, etc.)
+// as children. Provides wide-content layout + caption.
+// For Observable Plot specifically, render server-side with @observablehq/plot
+// in the frontmatter of the importing page and pass `set:html={plot.outerHTML}`,
+// or just put inline SVG in the slot.
+//
+// Usage in MDX:
+//   <Chart caption="Daily commits, normalized" source="github api">
+//     <svg viewBox="0 0 400 200">...</svg>
+//   </Chart>
+interface Props {
+	caption?: string;
+	source?: string;
+	wide?: boolean;
+}
+const { caption, source, wide = true } = Astro.props;
+---
+
+<figure class:list={['chart', { wide }]}>
+	<div class="chart-body"><slot /></div>
+	{(caption || source) && (
+		<figcaption>
+			{caption && <span class="caption">{caption}</span>}
+			{source && <span class="source">Source: {source}</span>}
+		</figcaption>
+	)}
+</figure>
+
+<style>
+	.chart {
+		margin: var(--space-l) auto;
+		font-family: var(--font-mono);
+	}
+	.chart-body {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: var(--space-m);
+		background: var(--bg-elev);
+		border: 1px solid var(--rule);
+		border-radius: var(--radius-m);
+		overflow-x: auto;
+	}
+	.chart-body :global(svg) {
+		max-width: 100%;
+		height: auto;
+	}
+	figcaption {
+		margin-top: var(--space-2xs);
+		font-size: 0.82rem;
+		color: var(--muted);
+		text-align: center;
+		display: flex;
+		justify-content: center;
+		gap: var(--space-s);
+		flex-wrap: wrap;
+	}
+	.caption {
+		font-style: italic;
+	}
+	.source {
+		font-size: 0.75rem;
+	}
+</style>

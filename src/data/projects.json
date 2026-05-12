@@ -1,0 +1,56 @@
+[
+	{
+		"slug": "skiff",
+		"name": "skiff",
+		"tagline": "Container orchestration for macOS + Linux",
+		"blurb": "A single-binary, single-YAML control plane between docker-compose and Kubernetes. Health-aware lifecycle management, scheduling, service discovery, and a unified API for containers, native daemons, and scheduled jobs on one machine.",
+		"href": "https://github.com/chronick/skiff",
+		"tags": ["infra"],
+		"featured": true
+	},
+	{
+		"slug": "lookout",
+		"name": "lookout",
+		"tagline": "OTEL trace collector for AI agents",
+		"blurb": "OpenTelemetry collector purpose-built for agent workflows. Ingests gRPC/HTTP traces, enriches spans with token-cost calculations and anomaly detection, groups by session, exposes a web UI, REST API, MCP server, and TUI.",
+		"href": "https://github.com/chronick/lookout",
+		"tags": ["infra", "ai"],
+		"featured": true
+	},
+	{
+		"slug": "hatch3d",
+		"name": "hatch3d",
+		"tagline": "Pen-plotter compositions",
+		"blurb": "Generative compositions and a hatching algorithm targeting the AxiDraw. Daily ingest from /r/plotterart for inspiration; a print queue runs on a Raspberry Pi.",
+		"href": "https://github.com/chronick/hatch3d",
+		"tags": ["art"],
+		"featured": true
+	},
+	{
+		"slug": "qpas-ish",
+		"name": "qpas-ish",
+		"tagline": "Stereo resonant filter firmware",
+		"blurb": "Rust firmware for the Electrosmith Daisy Patch SM. A QPAS-inspired clocked stereo resonant filter — two state-variable cores with continuous LP/BP/HP morph and stereo frequency spread, built for resonant pinging.",
+		"href": "https://github.com/chronick/qpas-ish",
+		"tags": ["audio", "eurorack"],
+		"featured": true
+	},
+	{
+		"slug": "duopulse",
+		"name": "duopulse",
+		"tagline": "2-voice algorithmic drum sequencer",
+		"blurb": "Eurorack firmware for the Patch.Init — an opinionated 2-voice percussion sequencer for techno through experimental IDM. Zero shift layers; every parameter is directly accessible across eight knobs and two modes.",
+		"href": "https://github.com/chronick/duopulse",
+		"tags": ["audio", "eurorack"],
+		"featured": false
+	},
+	{
+		"slug": "brightpath",
+		"name": "BrightPath",
+		"tagline": "Satirical corporate-consultancy site",
+		"blurb": "Procedural slogan generator, synergy clustering, stakeholder lingo, and Fisher-Yates-shuffled visuals — a deadpan parody of management-consultancy web design rendered with unironic craft.",
+		"href": "https://brightpath-global-solutions.com",
+		"tags": ["web", "satire"],
+		"featured": false
+	}
+]

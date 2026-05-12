@@ -1,0 +1,40 @@
+---
+// Generic iframe wrapper for YouTube, Observable, Vimeo, etc.
+// Preserves aspect ratio; lazy-loads.
+// Usage in MDX:
+//   <Embed src="https://www.youtube.com/embed/<id>" title="Description" aspect="16/9" />
+//   <Embed src="https://observablehq.com/embed/<id>" aspect="4/3" />
+interface Props {
+	src: string;
+	title?: string;
+	aspect?: string;
+	wide?: boolean;
+}
+const { src, title = 'Embedded content', aspect = '16/9', wide = true } = Astro.props;
+---
+
+<figure class:list={['embed', { wide }]} style={`--aspect: ${aspect};`}>
+	<iframe
+		src={src}
+		title={title}
+		loading="lazy"
+		allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+		allowfullscreen
+	></iframe>
+</figure>
+
+<style>
+	.embed {
+		margin: var(--space-l) 0;
+		border-radius: var(--radius-m);
+		overflow: hidden;
+		border: 1px solid var(--rule);
+		aspect-ratio: var(--aspect);
+	}
+	.embed iframe {
+		width: 100%;
+		height: 100%;
+		border: 0;
+		display: block;
+	}
+</style>
