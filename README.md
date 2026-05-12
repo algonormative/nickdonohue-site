@@ -1,6 +1,6 @@
 # nickdonohue.net
 
-Personal site. Astro 5, deployed to Cloudflare Pages.
+Personal site. Astro 5, deployed to GitHub Pages.
 
 - Live: <https://nickdonohue.net>
 - Old domain: chronick.net (301-redirects via the Worker under `.cloudflare/redirect/`)
