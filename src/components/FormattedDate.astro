@@ -12,6 +12,9 @@ const { date } = Astro.props;
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric',
+			// pubDate is date-only, so it parses as UTC midnight. Without this,
+			// every reader west of Greenwich sees each post dated a day early.
+			timeZone: 'UTC',
 		})
 	}
 </time>
