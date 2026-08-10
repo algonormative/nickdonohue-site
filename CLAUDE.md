@@ -48,7 +48,7 @@ The vault drives the capture and triage workflow. See `~/git/vault/writing/CONTE
 
 1. Capture in `~/git/vault/writing/inbox/`
 2. Develop in `~/git/vault/writing/topics/<slug>/`
-3. Shape into `~/git/website/src/content/blog/<slug>.md` with `draft: true` (visible from the vault via the `writing/in-flight/` symlink — same file, two paths)
+3. Shape into `~/git/nickdonohue-site/src/content/blog/<slug>.md` with `draft: true` (the vault's `writing/in-flight/` symlink is meant to mirror this directory — same file, two paths; confirm it points here and not at the old `~/git/website` clone of `chronick.github.io`)
 4. Publish: flip `draft: false`, set `pubDate`, commit, push
 
 Use `/write` skill to drive 1-4.
@@ -95,8 +95,10 @@ npm run preview   # local preview of production build
 
 ## Deploy
 
-GitHub Pages, source = GitHub Actions, repo `chronick/chronick.github.io` (public). The workflow at `.github/workflows/deploy.yml` runs `npm ci && npm run build` and uploads `dist/` to Pages. Auto-deploys on push to `main`. Custom domain `nickdonohue.net` (set via `public/CNAME` + GitHub Pages settings).
+GitHub Pages, source = GitHub Actions, repo `chronick/nickdonohue-site` (public). The workflow at `.github/workflows/deploy.yml` runs `npm ci && npm run build` and uploads `dist/` to Pages. Auto-deploys on push to `main`. Custom domain `nickdonohue.net` (set via `public/CNAME` + GitHub Pages settings).
 
-PostHog analytics need the `PUBLIC_POSTHOG_KEY` repository secret — `gh secret set PUBLIC_POSTHOG_KEY --repo chronick/chronick.github.io` once available. The PostHog component is gated on `import.meta.env.PROD && Boolean(apiKey)` so absence is fine.
+The separate `chronick/chronick.github.io` repo (cloned at `~/git/website`) is **not** this site — it is the user-pages repo that serves project pages at `chronick.github.io/<repo>`. It must stay domain-free: a `CNAME` there 301-redirects every project page. Never add one, and never shape drafts into that clone.
+
+PostHog analytics need the `PUBLIC_POSTHOG_KEY` repository secret — `gh secret set PUBLIC_POSTHOG_KEY --repo chronick/nickdonohue-site` once available. The PostHog component is gated on `import.meta.env.PROD && Boolean(apiKey)` so absence is fine.
 
 The chronick.net 301-redirect Worker lives under `.cloudflare/redirect/` — `wrangler deploy` to ship. Cloudflare hosts the redirect; GitHub Pages hosts the site itself.
