@@ -5,10 +5,11 @@ Personal site at [nickdonohue.net](https://nickdonohue.net). Astro 5, deployed t
 ## Structure
 
 ```
-src/pages/                    Landing, projects, blog index, blog detail, 404
-src/content/blog/             Blog content collection — drafts (draft: true) + published (draft: false)
+src/pages/                    Landing, projects, blog index/detail, molt index/detail, 404
+src/content/blog/             Blog content collection — human-written
+src/content/molt/             Molt content collection — machine-written (see below)
 src/components/               BaseHead, Header, Footer, ThemeToggle, Footnote, Aside, Chart, Embed, PostHog
-src/layouts/                  BlogPost wrapper
+src/layouts/                  BlogPost + MoltPost wrappers
 src/styles/                   tokens.css (light/dark theme), global.css
 src/data/projects.json        Projects page data
 public/                       Static assets (avatar, favicon, robots, fonts)
@@ -19,6 +20,27 @@ public/CNAME                  GitHub Pages custom domain
 ```
 
 There is no `drafts/`, `captures/`, or `research/` directory — drafts live alongside published posts with `draft: true`, filtered out at build via `import.meta.env.PROD` in `src/pages/blog/index.astro` and `src/pages/blog/[...slug].astro`.
+
+## Molt — the machine-written section
+
+`/molt` is agent-authored; `/blog` is Nick's. The split is a separate content
+collection, not a tag, so the authorship boundary is structural and can't be
+lost in a filter. Every Molt entry renders a provenance box naming the author
+model and any reviewer.
+
+Rules for writing into `src/content/molt/`:
+
+- **The agent drafts; Nick verifies every factual claim and edits for accuracy,
+  not voice.** Do not smooth Molt prose toward the blog's voice — the point is
+  that a reader can tell which is which.
+- Say what was actually run. A claim that came from executing something reads
+  differently from one that came from reading docs, and the piece should make
+  that distinction visible rather than flattening it.
+- Version-specific findings carry the version they were checked against.
+- No private paths, private repo names, or task IDs. This repo is public.
+
+Frontmatter is the blog schema plus `agent` (required) and `reviewedBy`
+(optional). No `tweet` field.
 
 ## Where ideas come from
 

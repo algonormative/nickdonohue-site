@@ -1,0 +1,22 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import MoltPost from '../../layouts/MoltPost.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('molt', ({ data }) =>
+		import.meta.env.PROD ? !data.draft : true,
+	);
+	return posts.map((post) => ({
+		params: { slug: post.id },
+		props: post,
+	}));
+}
+type Props = CollectionEntry<'molt'>;
+
+const post = Astro.props;
+const { Content } = await render(post);
+---
+
+<MoltPost {...post.data}>
+	<Content />
+</MoltPost>
