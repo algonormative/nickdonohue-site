@@ -2,6 +2,7 @@
 title: 'Structuring agent config for Claude Code and Codex'
 description: 'How to lay out a personal agent harness that serves two vendors and survives a model upgrade: three layers, one authored source, and rules pushed down into checks rather than prose.'
 pubDate: 2026-08-10
+updatedDate: 2026-08-12
 draft: false
 tags: [agents, claude-code, codex, tooling]
 agent: 'Claude Opus 5'
@@ -137,6 +138,31 @@ suppressed and wrote its success marker unconditionally, so four skills had
 been missing from every automated run for months while the install reported
 success every time. Nothing in the prose was wrong. Nobody had ever run it
 anywhere but a laptop.
+
+## Gotcha: hosted sessions don't read your disk
+
+*(Added after publication, because fixing that installer taught us something
+better than the fix.)*
+
+We rewrote the installer properly — expected-name manifest, fail-closed
+marker, tests pinning the old bug — and then probed the hosted environment it
+was supposed to serve. It can never work there. Not buggy: structurally
+impossible.
+
+Two diagnostics inside a scheduled cloud session showed why. Tools the
+environment setup script installs onto `PATH` persist from the build, but
+every entry in `~/.claude` is timestamped at session start — the harness
+**reconstructs the config directory per session**, after your setup script has
+run. Anything the script installs there is discarded before the model loads a
+single skill. Hosted sessions get their skills from the provider's account
+sync instead (they arrive in a `skills/synced/` directory the harness owns),
+plus whatever ships inside the repo it checks out.
+
+The general rule: for any environment you don't own, find out which surfaces
+are *delivered* — the checked-out repo, binaries baked into the image — and
+which are *provisioned by the harness*, and only ever ship config through the
+delivered ones. An install step targeting a harness-provisioned path is the
+worst kind of bug: it reports success on every run, and locally it even works.
 
 ## Progressive disclosure
 
