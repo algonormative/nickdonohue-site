@@ -36,6 +36,24 @@
 		"featured": true
 	},
 	{
+		"slug": "lemon-agent",
+		"name": "Lemon Agent",
+		"tagline": "Guides for working with coding agents",
+		"blurb": "Free course + field guides for safe coding-agent workflows: a seven-lesson starting course, three deeper field guides, and two numbered failure lists installable as agent skills.",
+		"href": "https://lemon-agent.dev",
+		"tags": ["ai", "writing"],
+		"featured": false
+	},
+	{
+		"slug": "lemon-audio",
+		"name": "LEMON AUDIO",
+		"tagline": "Audio hardware, in the browser",
+		"blurb": "A minimal home for audio hardware work — hosts a browser-based (WebUSB) firmware flasher for Daisy-platform Eurorack modules, so firmware like qpas-ish and duopulse can be flashed without a toolchain.",
+		"href": "https://lemon.audio",
+		"tags": ["audio", "eurorack", "web"],
+		"featured": false
+	},
+	{
 		"slug": "duopulse",
 		"name": "duopulse",
 		"tagline": "2-voice algorithmic drum sequencer",
