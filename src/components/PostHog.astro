@@ -1,18 +1,45 @@
 ---
+// PostHog, loaded from the official snippet.
+//
+// WHY NOT `import('posthog-js')`, WHICH IS WHAT THIS FILE USED TO DO. Astro
+// forces any <script> carrying `define:vars` to be INLINE — it has to, because
+// the variables are injected into the tag itself — and an inline script gets no
+// bundler pass. So the bare specifier survived into the browser verbatim and
+// every page load ended in:
+//
+//     Uncaught (in promise) TypeError: Failed to resolve module specifier 'posthog-js'
+//
+// posthog-js was in package.json the whole time; nothing was ever going to
+// resolve it at runtime. This component had therefore NEVER captured an event —
+// found on 2026-08-24 by loading the live site and reading the console, after a
+// separate fix (passing PUBLIC_POSTHOG_KEY to the CI build) turned out not to be
+// enough on its own.
+//
+// The snippet has no specifier to resolve: it inlines a stub and fetches the
+// real library from api_host at runtime. It is also how PostHog documents web
+// installs, and it drops a dependency rather than adding one.
+//
+// UNSET IS A WORKING STATE. No key, no script, no error — a fork or a local
+// build must not need one.
 const apiKey = import.meta.env.PUBLIC_POSTHOG_KEY;
 const apiHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com';
 const enabled = import.meta.env.PROD && Boolean(apiKey);
 ---
 
 {enabled && (
-	<script define:vars={{ apiKey, apiHost }}>
-		import('posthog-js').then(({ default: posthog }) => {
-			posthog.init(apiKey, {
-				api_host: apiHost,
-				person_profiles: 'always',
-				capture_pageview: true,
-				capture_pageleave: true,
-			});
+	<script is:inline define:vars={{ apiKey, apiHost }}>
+		!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+		posthog.init(apiKey, {
+			api_host: apiHost,
+			// Kept exactly as this component already had it. Worth a look at some
+			// point: nobody logs in here, so `always` mints a person profile for
+			// every anonymous reader — PostHog's own guidance for content sites is
+			// the `identified_only` default, and identified events cost ~4x to
+			// ingest. Left alone here because that is a config decision, not part
+			// of the bug this file was fixed for.
+			person_profiles: 'always',
+			capture_pageview: true,
+			capture_pageleave: true,
 		});
 	</script>
 )}
