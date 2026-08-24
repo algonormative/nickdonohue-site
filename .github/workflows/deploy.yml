@@ -25,6 +25,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          # Without this block the secret is invisible to the build and the site
+          # ships with analytics silently disabled — which is exactly what had
+          # happened: src/components/PostHog.astro has existed for a while,
+          # gated on `import.meta.env.PROD && Boolean(apiKey)`, and apiKey was
+          # never reaching it. Astro bakes PUBLIC_ vars in at build time, so
+          # this is the only moment it can be read.
+          PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
