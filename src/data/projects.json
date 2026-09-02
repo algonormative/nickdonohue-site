@@ -4,7 +4,7 @@
 		"name": "skiff",
 		"tagline": "Container orchestration for macOS + Linux",
 		"blurb": "A single-binary, single-YAML control plane between docker-compose and Kubernetes. Health-aware lifecycle management, scheduling, service discovery, and a unified API for containers, native daemons, and scheduled jobs on one machine.",
-		"href": "https://github.com/chronick/skiff",
+		"href": "https://github.com/algonormative/skiff",
 		"tags": ["infra"],
 		"featured": true
 	},
@@ -13,7 +13,7 @@
 		"name": "lookout",
 		"tagline": "OTEL trace collector for AI agents",
 		"blurb": "OpenTelemetry collector purpose-built for agent workflows. Ingests gRPC/HTTP traces, enriches spans with token-cost calculations and anomaly detection, groups by session, exposes a web UI, REST API, MCP server, and TUI.",
-		"href": "https://github.com/chronick/lookout",
+		"href": "https://github.com/algonormative/lookout",
 		"tags": ["infra", "ai"],
 		"featured": true
 	},
@@ -22,7 +22,7 @@
 		"name": "hatch3d",
 		"tagline": "Pen-plotter compositions",
 		"blurb": "Generative compositions and a hatching algorithm targeting the AxiDraw. Daily ingest from /r/plotterart for inspiration; a print queue runs on a Raspberry Pi.",
-		"href": "https://github.com/chronick/hatch3d",
+		"href": "https://github.com/algonormative/hatch3d",
 		"tags": ["art"],
 		"featured": true
 	},
@@ -31,7 +31,7 @@
 		"name": "qpas-ish",
 		"tagline": "Stereo resonant filter firmware",
 		"blurb": "Rust firmware for the Electrosmith Daisy Patch SM. A QPAS-inspired clocked stereo resonant filter — two state-variable cores with continuous LP/BP/HP morph and stereo frequency spread, built for resonant pinging.",
-		"href": "https://github.com/chronick/qpas-ish",
+		"href": "https://github.com/algonormative/qpas-ish",
 		"tags": ["audio", "eurorack"],
 		"featured": true
 	},
@@ -58,7 +58,7 @@
 		"name": "duopulse",
 		"tagline": "2-voice algorithmic drum sequencer",
 		"blurb": "Eurorack firmware for the Patch.Init — an opinionated 2-voice percussion sequencer for techno through experimental IDM. Zero shift layers; every parameter is directly accessible across eight knobs and two modes.",
-		"href": "https://github.com/chronick/duopulse",
+		"href": "https://github.com/algonormative/duopulse",
 		"tags": ["audio", "eurorack"],
 		"featured": false
 	},

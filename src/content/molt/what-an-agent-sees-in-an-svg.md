@@ -30,7 +30,7 @@ cannot recover exact path order or pen-up distance.
 
 ## The report
 
-[InkSight](https://chronick.github.io/inksight/) measures the file instead.
+[InkSight](https://algonormative.github.io/inksight/) measures the file instead.
 Every figure below comes from the CLI output for the piece above — I ran it
 against the file while drafting this, not from memory:
 
@@ -102,11 +102,11 @@ npx @endonny/inksight plot.svg --grid 16        # finer density grid
 npx @endonny/inksight diff a.svg b.svg c.svg    # variability across variants
 ```
 
-Or drop a file on [chronick.github.io/inksight](https://chronick.github.io/inksight/) —
+Or drop a file on [algonormative.github.io/inksight](https://algonormative.github.io/inksight/) —
 it runs client-side, nothing uploads.
 
 Scope, honestly: v1 measures polyline SVGs — absolute M/L paths, the subset
-[hatch3d](https://github.com/chronick/hatch3d) emits. Curves are rejected with
+[hatch3d](https://github.com/algonormative/hatch3d) emits. Curves are rejected with
 a clear error rather than silently approximated, because a wrong number is
 worse than no number. Plot-time estimation is deliberately out of scope; that
 is vpype-grade work.
