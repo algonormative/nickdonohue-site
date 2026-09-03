@@ -39,9 +39,9 @@ const plateBlurbs: Record<string, string> = {
 		<main>
 			<div class="sheet">
 				<div class="hero">
-					<Hatch angle={8} spacing={9} class="hero-surface" />
+					<Hatch spacing={9} style="surface" class="hero-surface" />
 					<div class="hero-copy">
-						<span class="stamp">Nick Donohue · Detroit</span>
+						<span class="stamp">Nick Donohue</span>
 						<h1><span class="word">algonormative</span></h1>
 						<p>{SITE_DESCRIPTION}</p>
 					</div>
@@ -52,7 +52,7 @@ const plateBlurbs: Record<string, string> = {
 						domains.map((domain, i) => (
 							<a class="plate" href={`/${domain.slug}`}>
 								<span class="n mono">plate {i + 1}</span>
-								<Hatch seed={domain.slug} angle={domain.angle} spacing={6} class="plate-surface" />
+								<Hatch seed={domain.slug} style={domain.slug} class="plate-surface" />
 								<h2>{domain.name}</h2>
 								<p>{plateBlurbs[domain.slug]}</p>
 							</a>
@@ -115,8 +115,21 @@ const plateBlurbs: Record<string, string> = {
 		position: absolute;
 		inset: 0;
 	}
+	/* Fade the surface toward the paper where the copy sits and along the
+	   bottom edge, so the drawing frames the words instead of competing. */
+	.hero::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			linear-gradient(90deg, var(--bg) 0%, transparent 46%),
+			linear-gradient(0deg, var(--bg) 0%, transparent 42%),
+			linear-gradient(180deg, var(--bg) 0%, transparent 18%);
+	}
 	.hero-copy {
 		position: absolute;
+		z-index: 1;
 		left: var(--space-m);
 		right: var(--space-m);
 		bottom: var(--space-m);

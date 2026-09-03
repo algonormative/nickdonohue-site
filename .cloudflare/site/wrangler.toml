@@ -1,0 +1,22 @@
+# algonormative.net on Cloudflare Workers (static assets).
+#
+# Deploy after `npm run build` from the repo root:
+#
+#   npx wrangler deploy --config .cloudflare/site/wrangler.toml
+#
+# The custom-domain routes make Cloudflare create and manage the DNS records
+# and certificate for algonormative.net and www.algonormative.net on first
+# deploy. GitHub Pages keeps serving the nickdonohue.net origin; the
+# redirect Worker in ../redirect answers for that host before the origin.
+name = "algonormative-site"
+compatibility_date = "2026-05-12"
+
+[assets]
+directory = "../../dist"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+
+routes = [
+	{ pattern = "algonormative.net", custom_domain = true },
+	{ pattern = "www.algonormative.net", custom_domain = true },
+]

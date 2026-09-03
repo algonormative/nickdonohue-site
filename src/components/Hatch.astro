@@ -4,21 +4,35 @@
 
   The same idea hatch3d uses on the plotter: a small height field, parallel
   lines displaced along the surface normal, and a second half-offset pass only
-  where the field dips, so shaded regions get double density. One ink, one line
-  weight, tone from density.
+  where the field dips, so shaded regions get double density. One line weight,
+  tone from density, and two inks that blend across the sheet.
 
-  Ink comes from the --hatch token, so the drawing follows the theme.
-  Omit `seed` and the surface is seeded per visit; pass the domain slug and the
-  plate stays recognisable from one visit to the next.
+  Each `style` is a recipe, so every plate is drawn with its own hand:
+
+    surface  the default; a soft wash of ink into lemon-ink, used for the hero
+    sound    horizontal lines with a ripple through them; lemon highlights on the peaks
+    ink      cross-hatched shadows in plain ink, and one lemon line: the pen change
+    agents   vertical lines over a faint lattice; cyan dashes mark the nodes
+    play     diagonal dashed lines with an orange thread every few lines
+
+  Inks come from theme tokens (--hatch, --hatch-2, --hatch-alpha and the
+  per-style --hatch-tone-* / --hatch-accent-* pairs), so every recipe follows
+  the theme. The seed jitters angle, spacing and tone slightly, so no two
+  renders match exactly while all of them stay on the palette. Omit `seed`
+  and the surface is seeded per visit; pass the domain slug and the plate
+  stays recognisable from one visit to the next.
 */
+type Style = 'surface' | 'sound' | 'ink' | 'agents' | 'play';
+
 interface Props {
 	seed?: string;
 	angle?: number;
 	spacing?: number;
+	style?: Style;
 	class?: string;
 }
 
-const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
+const { seed, angle, spacing, style = 'surface', class: className } = Astro.props;
 ---
 
 <canvas
@@ -27,6 +41,7 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 	data-seed={seed}
 	data-angle={angle}
 	data-spacing={spacing}
+	data-style={style}
 	role="presentation"
 	aria-hidden="true"></canvas>
 
@@ -41,8 +56,11 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 <script>
 	// One instance script for every canvas on the page.
 	(() => {
+		type RGB = [number, number, number];
+		type Rng = () => number;
+
 		// Small seeded PRNG so each plate is stable and the hero varies per visit.
-		function rng(seed: string) {
+		function rng(seed: string): Rng {
 			let h = 2166136261;
 			for (let i = 0; i < seed.length; i++) {
 				h ^= seed.charCodeAt(i);
@@ -57,21 +75,139 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 			};
 		}
 
-		function inkColor() {
-			return (
-				getComputedStyle(document.documentElement).getPropertyValue('--hatch').trim() ||
-				'#171b2a'
-			);
+		function hexToRgb(hex: string, fallback: RGB): RGB {
+			const h = hex.trim().replace('#', '');
+			if (!/^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(h)) return fallback;
+			const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+			const n = parseInt(full, 16);
+			return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 		}
 
-		// Height field: three seeded sine ridges. Hatch lines are displaced by the
-		// field; a second, half-offset pass is drawn only where the field dips.
-		function drawHatch(
-			canvas: HTMLCanvasElement,
-			seed: string,
-			angleDeg: number,
-			spacingPx: number,
-		) {
+		function mix(a: RGB, b: RGB, t: number): RGB {
+			const k = Math.min(1, Math.max(0, t));
+			return [
+				Math.round(a[0] + (b[0] - a[0]) * k),
+				Math.round(a[1] + (b[1] - a[1]) * k),
+				Math.round(a[2] + (b[2] - a[2]) * k),
+			];
+		}
+
+		function css(c: RGB) {
+			return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+		}
+
+		function token(name: string, fallback: string) {
+			const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+			return v || fallback;
+		}
+
+		interface Recipe {
+			angle: number;
+			spacing: number;
+			width: number;
+			alpha: number;
+			toneA: RGB;
+			toneB: RGB;
+			ripple: number; // extra high-frequency wave along the line direction
+			shadow: boolean; // half-offset pass where the field dips
+			cross: boolean; // shadow pass rotated 90 degrees, i.e. cross-hatching
+			lattice: boolean; // faint orthogonal pass over the whole surface
+			dash: number[] | null;
+			accent: RGB | null;
+			accentEvery: number; // 0 = exactly one line
+			accentWidth: number;
+			accentDash: number[] | null;
+			accentAbove: number; // draw the accent only where the field is above this
+		}
+
+		function recipe(style: string, r: Rng, angleAttr?: number, spacingAttr?: number): Recipe {
+			const jitter = (spread: number) => (r() * 2 - 1) * spread;
+			const ink = hexToRgb(token('--hatch', '#171b2a'), [23, 27, 42]);
+			const ink2 = hexToRgb(token('--hatch-2', '#5c7000'), ink);
+			const alpha = Number(token('--hatch-alpha', '1')) || 1;
+			const tone = (s: string) => hexToRgb(token(`--hatch-tone-${s}`, ''), ink2);
+			const accent = (s: string) => hexToRgb(token(`--hatch-accent-${s}`, ''), ink2);
+			// The second ink is pulled a little toward the first, by a seeded amount,
+			// so the blend differs from render to render but never leaves the palette.
+			const soften = (b: RGB) => mix(b, ink, r() * 0.35);
+
+			const base: Recipe = {
+				angle: angleAttr ?? 8,
+				spacing: spacingAttr ?? 8,
+				width: 0.8,
+				alpha,
+				toneA: ink,
+				toneB: soften(ink2),
+				ripple: 0,
+				shadow: true,
+				cross: false,
+				lattice: false,
+				dash: null,
+				accent: null,
+				accentEvery: 0,
+				accentWidth: 1.6,
+				accentDash: null,
+				accentAbove: 0.5,
+			};
+
+			switch (style) {
+				case 'sound':
+					return {
+						...base,
+						angle: (angleAttr ?? 0) + jitter(2),
+						spacing: (spacingAttr ?? 6) + jitter(0.6),
+						toneB: soften(tone('sound')),
+						ripple: 0.28 + r() * 0.12,
+						accent: accent('sound'),
+						accentEvery: 4,
+						accentWidth: 2.2,
+						accentAbove: 0.45,
+					};
+				case 'ink':
+					return {
+						...base,
+						angle: (angleAttr ?? 45) + jitter(6),
+						spacing: (spacingAttr ?? 6) + jitter(0.6),
+						width: 0.7,
+						toneB: soften(tone('ink')),
+						cross: true,
+						accent: accent('ink'),
+						accentEvery: 0,
+						accentWidth: 1.8,
+						accentAbove: -1,
+					};
+				case 'agents':
+					return {
+						...base,
+						angle: (angleAttr ?? 90) + jitter(3),
+						spacing: (spacingAttr ?? 6) + jitter(0.5),
+						toneB: soften(tone('agents')),
+						lattice: true,
+						accent: accent('agents'),
+						accentEvery: 3,
+						accentWidth: 1.7,
+						accentDash: [2, 5],
+						accentAbove: 0.4,
+					};
+				case 'play':
+					return {
+						...base,
+						angle: (angleAttr ?? 135) + jitter(8),
+						spacing: (spacingAttr ?? 7) + jitter(0.8),
+						toneB: soften(tone('play')),
+						dash: [7, 5],
+						shadow: false,
+						accent: accent('play'),
+						accentEvery: 5,
+						accentWidth: 1.4,
+						accentAbove: 0.35,
+					};
+				default:
+					return { ...base, angle: (angleAttr ?? 8) + jitter(4) };
+			}
+		}
+
+		function drawHatch(canvas: HTMLCanvasElement, seed: string, style: string) {
 			const dpr = Math.min(window.devicePixelRatio || 1, 2);
 			const w = canvas.clientWidth;
 			const h = canvas.clientHeight;
@@ -84,6 +220,11 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 			ctx.clearRect(0, 0, w, h);
 
 			const r = rng(seed);
+			const angleAttr = canvas.dataset.angle ? Number(canvas.dataset.angle) : undefined;
+			const spacingAttr = canvas.dataset.spacing ? Number(canvas.dataset.spacing) : undefined;
+			const rc = recipe(style, r, angleAttr, spacingAttr);
+
+			// Height field: three seeded sine ridges, plus an optional ripple.
 			const waves = Array.from({ length: 3 }, () => ({
 				fx: ((0.4 + r() * 1.6) * Math.PI * 2) / Math.max(w, h),
 				fy: ((0.4 + r() * 1.6) * Math.PI * 2) / Math.max(w, h),
@@ -91,21 +232,40 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 				amp: 0.5 + r() * 0.8,
 			}));
 			const total = waves.reduce((a, o) => a + o.amp, 0);
-			const field = (x: number, y: number) =>
-				waves.reduce((z, o) => z + o.amp * Math.sin(o.fx * x + o.fy * y + o.ph), 0) / total;
+			const rippleF = ((10 + r() * 6) * Math.PI * 2) / w;
+			const ripplePh = r() * Math.PI * 2;
+			const field = (x: number, y: number) => {
+				let z =
+					waves.reduce((acc, o) => acc + o.amp * Math.sin(o.fx * x + o.fy * y + o.ph), 0) / total;
+				if (rc.ripple) {
+					z += rc.ripple * Math.sin(rippleF * x + ripplePh) * (0.5 + 0.5 * Math.cos(y * 0.02));
+				}
+				return z;
+			};
 
-			const a = (angleDeg * Math.PI) / 180;
-			const dir = { x: Math.cos(a), y: Math.sin(a) };
-			const nrm = { x: -dir.y, y: dir.x };
 			const diag = Math.hypot(w, h);
 			const amp = Math.min(w, h) * 0.06;
 			const step = 3;
-			ctx.strokeStyle = inkColor();
 			ctx.lineCap = 'round';
-			ctx.lineWidth = 0.9;
+			ctx.lineJoin = 'round';
 
-			function pass(offset: number, onlyShadow: boolean) {
-				for (let d = -diag + offset; d < diag; d += spacingPx) {
+			// One family of parallel lines at `deg`, spaced `spacing`, shifted by
+			// `offset`. `keep(z)` decides where the pen is down; `paint(i, t)` sets
+			// the stroke for line i at position t across the sheet (0..1) and
+			// returns false to skip the line entirely.
+			function family(
+				deg: number,
+				spacing: number,
+				offset: number,
+				keep: (z: number) => boolean,
+				paint: (i: number, t: number) => boolean,
+			) {
+				const a = (deg * Math.PI) / 180;
+				const dir = { x: Math.cos(a), y: Math.sin(a) };
+				const nrm = { x: -dir.y, y: dir.x };
+				let i = 0;
+				for (let d = -diag + offset; d < diag; d += spacing, i++) {
+					if (!paint(i, (d + diag) / (2 * diag))) continue;
 					const bx = w / 2 + nrm.x * d;
 					const by = h / 2 + nrm.y * d;
 					let pen = false;
@@ -117,7 +277,7 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 						const x = x0 + nrm.x * z * amp;
 						const y = y0 + nrm.y * z * amp;
 						const inside = x >= -2 && x <= w + 2 && y >= -2 && y <= h + 2;
-						const on = inside && (!onlyShadow || z < -0.15);
+						const on = inside && keep(z);
 						if (on && !pen) {
 							ctx!.moveTo(x, y);
 							pen = true;
@@ -131,9 +291,58 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 				}
 			}
 
-			pass(0, false);
-			ctx.globalAlpha = 0.85;
-			pass(spacingPx / 2, true);
+			// Tone drifts from toneA to toneB across the sheet, with a touch of
+			// per-line wobble so the blend reads as hand-mixed.
+			const tonePaint = (_i: number, t: number) => {
+				ctx!.strokeStyle = css(mix(rc.toneA, rc.toneB, t + (r() - 0.5) * 0.08));
+				return true;
+			};
+
+			// Main pass.
+			ctx.lineWidth = rc.width;
+			ctx.setLineDash(rc.dash ?? []);
+			ctx.globalAlpha = rc.alpha;
+			family(rc.angle, rc.spacing, 0, () => true, (i, t) => {
+				if (rc.dash) ctx!.lineDashOffset = (i * 3.7) % 12;
+				return tonePaint(i, t);
+			});
+			ctx.lineDashOffset = 0;
+
+			// Faint lattice under the main lines (agents).
+			if (rc.lattice) {
+				ctx.setLineDash([]);
+				ctx.globalAlpha = rc.alpha * 0.3;
+				family(rc.angle + 90, rc.spacing * 2.2, rc.spacing, () => true, tonePaint);
+			}
+
+			// Shadow pass: half-offset where the field dips, or cross-hatched (ink).
+			if (rc.shadow) {
+				ctx.setLineDash([]);
+				ctx.globalAlpha = rc.alpha * 0.85;
+				const shadowAngle = rc.cross ? rc.angle + 90 : rc.angle;
+				const shadowOffset = rc.cross ? 0 : rc.spacing / 2;
+				family(shadowAngle, rc.spacing, shadowOffset, (z) => z < -0.15, tonePaint);
+			}
+
+			// Accent: the category's colour, only where it counts.
+			if (rc.accent) {
+				ctx.setLineDash(rc.accentDash ?? []);
+				ctx.lineWidth = rc.accentWidth;
+				ctx.globalAlpha = 0.9;
+				ctx.strokeStyle = css(rc.accent);
+				const lines = Math.ceil((2 * diag) / rc.spacing);
+				const phase = Math.floor(r() * Math.max(1, rc.accentEvery));
+				const single = Math.floor(lines * (0.3 + r() * 0.4));
+				family(
+					rc.angle,
+					rc.spacing,
+					0,
+					(z) => z > rc.accentAbove,
+					(i) => (rc.accentEvery ? i % rc.accentEvery === phase : i === single),
+				);
+			}
+
+			ctx.setLineDash([]);
 			ctx.globalAlpha = 1;
 		}
 
@@ -143,12 +352,7 @@ const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
 			if (!canvas.dataset.seed) {
 				canvas.dataset.seed = 'visit-' + Date.now() + '-' + Math.random().toString(36).slice(2);
 			}
-			drawHatch(
-				canvas,
-				canvas.dataset.seed,
-				Number(canvas.dataset.angle ?? 8),
-				Number(canvas.dataset.spacing ?? 8),
-			);
+			drawHatch(canvas, canvas.dataset.seed, canvas.dataset.style ?? 'surface');
 		}
 
 		function drawAll() {

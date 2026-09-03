@@ -65,8 +65,19 @@
 	--lemon-wash: rgba(217, 255, 61, 0.35);
 	--lemon-fg: #171b2a;
 
-	/* Hatch ink, read by the canvas component */
+	/* Hatch inks, read by the canvas component: lines run from --hatch to
+	   --hatch-2 across the surface, at --hatch-alpha */
 	--hatch: #171b2a;
+	--hatch-2: #5c7000;
+	--hatch-alpha: 0.7;
+	--hatch-tone-sound: #5c7000;
+	--hatch-accent-sound: #d9ff3d;
+	--hatch-tone-ink: #7b8090;
+	--hatch-accent-ink: #d9ff3d;
+	--hatch-tone-agents: #2c7878;
+	--hatch-accent-agents: #2c7878;
+	--hatch-tone-play: #9b5400;
+	--hatch-accent-play: #d97a1a;
 
 	/* Tag palette, muted variants on paper */
 	--tag-cyan: #2c7878;
@@ -94,7 +105,17 @@
 	--lemon-wash: rgba(212, 255, 58, 0.16);
 	--lemon-fg: #0e1220;
 
-	--hatch: #e4e6de;
+	--hatch: #6b7390;
+	--hatch-2: #9aa83c;
+	--hatch-alpha: 0.62;
+	--hatch-tone-sound: #9aa83c;
+	--hatch-accent-sound: #d4ff3a;
+	--hatch-tone-ink: #8a90a0;
+	--hatch-accent-ink: #d4ff3a;
+	--hatch-tone-agents: #4a9a97;
+	--hatch-accent-agents: #6fd0cc;
+	--hatch-tone-play: #b07a3c;
+	--hatch-accent-play: #ffb066;
 
 	/* Tag palette, vivid on navy */
 	--tag-cyan: #6fd0cc;
@@ -123,7 +144,17 @@
 		--lemon-wash: rgba(212, 255, 58, 0.16);
 		--lemon-fg: #0e1220;
 
-		--hatch: #e4e6de;
+		--hatch: #6b7390;
+		--hatch-2: #9aa83c;
+		--hatch-alpha: 0.62;
+		--hatch-tone-sound: #9aa83c;
+		--hatch-accent-sound: #d4ff3a;
+		--hatch-tone-ink: #8a90a0;
+		--hatch-accent-ink: #d4ff3a;
+		--hatch-tone-agents: #4a9a97;
+		--hatch-accent-agents: #6fd0cc;
+		--hatch-tone-play: #b07a3c;
+		--hatch-accent-play: #ffb066;
 
 		--tag-cyan: #6fd0cc;
 		--tag-pink: #ef7fae;
