@@ -63,4 +63,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Same major as the local wrangler; the action's default is a 3.x
+          # that predates run_worker_first and the current assets config.
+          wranglerVersion: "4.128.0"
           command: deploy --config .cloudflare/site/wrangler.toml
