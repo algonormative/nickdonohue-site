@@ -1,15 +1,21 @@
 /*
-  Theme tokens. Two themes — both first-class.
-  Body font: serif (Atkinson, loaded in global.css).
-  Chrome/code: Menlo (system mono).
-  Accent: a single neon-green that shifts per theme so contrast holds.
+  Theme tokens for "Plates".
+
+  The site should look like it was drawn by the tools it documents. A pen
+  plotter lays down one line weight, one ink, and gets tone from hatch
+  density. Light is drafting paper, dark is the same drawing on blueprint
+  stock. Lemon is a fill and a stamp, never text on paper: --lemon paints,
+  --accent (lemon-ink) carries links so contrast holds.
+
+  Display: Bricolage Grotesque. Body: Atkinson. Utility: Martian Mono.
+  Both new faces are self-hosted (see global.css); nothing is fetched at runtime.
 */
 
 :root {
 	/* Type */
 	--font-body: "Atkinson", "Iowan Old Style", "Charter", Georgia, ui-serif, serif;
-	--font-mono: Menlo, Monaco, "Cascadia Code", "Source Code Pro", Consolas, monospace;
-	--font-display: var(--font-mono);
+	--font-mono: "Martian Mono", Menlo, Monaco, "Cascadia Code", Consolas, monospace;
+	--font-display: "Bricolage Grotesque", "Archivo", "Helvetica Neue", Arial, sans-serif;
 
 	/* Modular scale (1.25) */
 	--step--1: 0.8rem;
@@ -34,75 +40,95 @@
 	--measure: 68ch;
 	--measure-wide: 96ch;
 
-	/* Radii */
-	--radius-s: 2px;
-	--radius-m: 4px;
+	/* Radii: plates are ruled, not rounded */
+	--radius-s: 0;
+	--radius-m: 0;
 }
 
-/* Light theme — warm off-white, deep ink, muted lime accent */
+/* Light theme, drafting paper: vellum with a faint green cast, blue-black ink */
 :root,
 [data-theme="light"] {
-	--bg: #f7f5f2;
-	--bg-elev: #ffffff;
-	--fg: #1a1a1e;
-	--muted: #6b6b75;
-	--rule: #d9d4cc;
-	--accent: #4f6b00;
-	--accent-hover: #3a5000;
-	--accent-fg: #f7f5f2;
-	--code-bg: #ece8e1;
-	--code-fg: #1a1a1e;
-	--selection-bg: rgba(79, 107, 0, 0.18);
+	--bg: #f2f3ee;
+	--bg-elev: #e9ebe3;
+	--fg: #171b2a;
+	--muted: #5e6472;
+	--rule: #c9cdc2;
+	--accent: #6e8500;
+	--accent-hover: #566800;
+	--accent-fg: #f2f3ee;
+	--code-bg: #e9ebe3;
+	--code-fg: #171b2a;
+	--selection-bg: rgba(217, 255, 61, 0.55);
 
-	/* Tag palette — muted variants on light */
+	/* Lemon: the fill. Painted behind ink, never used as text on paper. */
+	--lemon: #d9ff3d;
+	--lemon-wash: rgba(217, 255, 61, 0.35);
+	--lemon-fg: #171b2a;
+
+	/* Hatch ink, read by the canvas component */
+	--hatch: #171b2a;
+
+	/* Tag palette, muted variants on paper */
 	--tag-cyan: #2c7878;
 	--tag-pink: #a13568;
-	--tag-lime: #4f6b00;
+	--tag-lime: #6e8500;
 	--tag-orange: #9b5400;
 	--tag-purple: #5a3a80;
 }
 
-/* Dark theme — patchlab-derived, but no scanlines/glow */
+/* Dark theme, night plot: pale ink on navy, lemon reads as neon */
 [data-theme="dark"] {
-	--bg: #0d0d14;
-	--bg-elev: #14141c;
-	--fg: #e0e0e0;
-	--muted: #888899;
-	--rule: #1f1f28;
-	--accent: #ccff00;
-	--accent-hover: #b8e600;
-	--accent-fg: #0d0d14;
-	--code-bg: #14141c;
-	--code-fg: #e0e0e0;
-	--selection-bg: rgba(204, 255, 0, 0.22);
+	--bg: #0e1220;
+	--bg-elev: #151a2c;
+	--fg: #e4e6de;
+	--muted: #8a90a0;
+	--rule: #262c3e;
+	--accent: #d4ff3a;
+	--accent-hover: #eaff8a;
+	--accent-fg: #0e1220;
+	--code-bg: #151a2c;
+	--code-fg: #e4e6de;
+	--selection-bg: rgba(212, 255, 58, 0.24);
 
-	/* Tag palette — vivid on dark */
-	--tag-cyan: #5ab8b8;
-	--tag-pink: #c94a8a;
-	--tag-lime: #ccff00;
-	--tag-orange: #ff9933;
-	--tag-purple: #b370d9;
+	--lemon: #d4ff3a;
+	--lemon-wash: rgba(212, 255, 58, 0.16);
+	--lemon-fg: #0e1220;
+
+	--hatch: #e4e6de;
+
+	/* Tag palette, vivid on navy */
+	--tag-cyan: #6fd0cc;
+	--tag-pink: #ef7fae;
+	--tag-lime: #d4ff3a;
+	--tag-orange: #ffb066;
+	--tag-purple: #c39cf0;
 }
 
 /* System preference fallback when no explicit theme is set */
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme]) {
-		--bg: #0d0d14;
-		--bg-elev: #14141c;
-		--fg: #e0e0e0;
-		--muted: #888899;
-		--rule: #1f1f28;
-		--accent: #ccff00;
-		--accent-hover: #b8e600;
-		--accent-fg: #0d0d14;
-		--code-bg: #14141c;
-		--code-fg: #e0e0e0;
-		--selection-bg: rgba(204, 255, 0, 0.22);
+		--bg: #0e1220;
+		--bg-elev: #151a2c;
+		--fg: #e4e6de;
+		--muted: #8a90a0;
+		--rule: #262c3e;
+		--accent: #d4ff3a;
+		--accent-hover: #eaff8a;
+		--accent-fg: #0e1220;
+		--code-bg: #151a2c;
+		--code-fg: #e4e6de;
+		--selection-bg: rgba(212, 255, 58, 0.24);
 
-		--tag-cyan: #5ab8b8;
-		--tag-pink: #c94a8a;
-		--tag-lime: #ccff00;
-		--tag-orange: #ff9933;
-		--tag-purple: #b370d9;
+		--lemon: #d4ff3a;
+		--lemon-wash: rgba(212, 255, 58, 0.16);
+		--lemon-fg: #0e1220;
+
+		--hatch: #e4e6de;
+
+		--tag-cyan: #6fd0cc;
+		--tag-pink: #ef7fae;
+		--tag-lime: #d4ff3a;
+		--tag-orange: #ffb066;
+		--tag-purple: #c39cf0;
 	}
 }
