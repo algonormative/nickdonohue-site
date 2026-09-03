@@ -5,9 +5,13 @@ compatibility_date = "2026-05-12"
 # One Worker redirects every retired personal domain to algonormative.net.
 # Each route lives on its own zone; the status code is chosen per host in
 # src/index.js (chronick.net is a permanent 301, nickdonohue.net a 302).
+# nickdonohue.net still has DNS records pointing at GitHub Pages, so it uses
+# zone routes, which run in front of that origin. chronick.net has no DNS
+# records of its own, so it is attached as a Worker custom domain instead:
+# Cloudflare creates and manages the records for it.
 routes = [
-	{ pattern = "chronick.net/*", zone_name = "chronick.net" },
-	{ pattern = "www.chronick.net/*", zone_name = "chronick.net" },
 	{ pattern = "nickdonohue.net/*", zone_name = "nickdonohue.net" },
 	{ pattern = "www.nickdonohue.net/*", zone_name = "nickdonohue.net" },
+	{ pattern = "chronick.net", custom_domain = true },
+	{ pattern = "www.chronick.net", custom_domain = true },
 ]

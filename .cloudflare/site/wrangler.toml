@@ -9,14 +9,18 @@
 # deploy. GitHub Pages keeps serving the nickdonohue.net origin; the
 # redirect Worker in ../redirect answers for that host before the origin.
 name = "algonormative-site"
+main = "src/index.js"
 compatibility_date = "2026-05-12"
+workers_dev = false
 
-[assets]
-directory = "../../dist"
-not_found_handling = "404-page"
-html_handling = "auto-trailing-slash"
-
+# Top-level on purpose: anything below [assets] would belong to that table.
 routes = [
 	{ pattern = "algonormative.net", custom_domain = true },
 	{ pattern = "www.algonormative.net", custom_domain = true },
 ]
+
+[assets]
+binding = "ASSETS"
+directory = "../../dist"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"

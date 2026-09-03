@@ -18,6 +18,7 @@ const description =
 		<Header />
 		<main>
 			<header class="page-header">
+				<img class="avatar" src="/avatar.jpg" alt="Nick Donohue" width="72" height="72" />
 				<h1>About</h1>
 			</header>
 
@@ -81,6 +82,9 @@ const description =
 
 <style>
 	.page-header {
+		display: flex;
+		align-items: center;
+		gap: var(--space-m);
 		padding: var(--space-l) 0;
 		border-bottom: 1px solid var(--rule);
 		margin-bottom: var(--space-xl);
@@ -95,5 +99,13 @@ const description =
 	.prose p {
 		line-height: 1.7;
 		margin: 0 0 var(--space-m);
+	}
+	.avatar {
+		width: 72px;
+		height: 72px;
+		border-radius: 50%;
+		box-shadow: 0 0 0 1px var(--fg);
+		object-fit: cover;
+		flex-shrink: 0;
 	}
 </style>

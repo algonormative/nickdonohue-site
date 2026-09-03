@@ -41,9 +41,19 @@ const plateBlurbs: Record<string, string> = {
 				<div class="hero">
 					<Hatch spacing={9} style="surface" class="hero-surface" />
 					<div class="hero-copy">
-						<span class="stamp">Nick Donohue</span>
+						<div class="byline">
+							<img class="avatar" src="/avatar.jpg" alt="" width="56" height="56" loading="eager" />
+							<span class="stamp">Nick Donohue</span>
+						</div>
 						<h1><span class="word">algonormative</span></h1>
 						<p>{SITE_DESCRIPTION}</p>
+						<ul class="socials">
+							<li><a href="https://github.com/algonormative" rel="me">GitHub</a></li>
+							<li><a href="https://x.com/algonormative" rel="me">X</a></li>
+							<li><a href="https://www.linkedin.com/in/ndonohue" rel="me">LinkedIn</a></li>
+							<li><a href="mailto:nick@algonormative.net">Email</a></li>
+							<li><a href="/rss.xml">RSS</a></li>
+						</ul>
 					</div>
 				</div>
 
@@ -275,5 +285,46 @@ const plateBlurbs: Record<string, string> = {
 			right: var(--space-s);
 			bottom: var(--space-s);
 		}
+	}
+	/* Byline: the GitHub portrait beside the name stamp */
+	.byline {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2xs);
+	}
+	.avatar {
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		border: 2px solid var(--bg);
+		box-shadow: 0 0 0 1px var(--fg);
+		object-fit: cover;
+		background: var(--bg);
+		flex-shrink: 0;
+	}
+	/* Socials: small paper chips so the links read over the hatching */
+	.socials {
+		list-style: none;
+		margin: var(--space-3xs) 0 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3xs);
+	}
+	.socials a {
+		display: inline-block;
+		font-family: var(--font-mono);
+		font-size: 0.74rem;
+		letter-spacing: 0.04em;
+		color: var(--fg);
+		background: var(--bg);
+		border: 1px solid var(--rule);
+		padding: 0.3em 0.6em;
+		text-decoration: none;
+	}
+	.socials a:hover,
+	.socials a:focus-visible {
+		border-color: var(--fg);
+		box-shadow: inset 0 -3px 0 var(--lemon);
 	}
 </style>
