@@ -79,5 +79,15 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
 
+<!-- External links open in a new tab. Components set target explicitly; this
+     covers links inside rendered Markdown, where the author only writes the URL. -->
+<script>
+	document.querySelectorAll<HTMLAnchorElement>('a[href^="http"]').forEach((a) => {
+		if (a.host === location.host || a.target) return;
+		a.target = '_blank';
+		a.rel = a.rel ? `${a.rel} noopener` : 'noopener';
+	});
+</script>
+
 <!-- Analytics (prod only, no-op without PUBLIC_POSTHOG_KEY) -->
 <PostHog />

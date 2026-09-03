@@ -33,7 +33,7 @@ const description = 'Everything, in one index. Personal tools for sound, ink, ag
 				<div class="tb mono">
 					<span><b>Entries</b>{projects.length}</span>
 					<span><b>Plates</b>{domains.length}</span>
-					<span><b>Source</b><a href="https://github.com/algonormative">GitHub</a></span>
+					<span><b>Source</b><a href="https://github.com/algonormative" target="_blank" rel="noopener">GitHub</a></span>
 				</div>
 			</header>
 
@@ -63,12 +63,12 @@ const description = 'Everything, in one index. Personal tools for sound, ink, ag
 									</span>
 									<span class="row-meta mono">
 										{project.live && (
-											<a href={project.live} rel="noopener">
+											<a href={project.live} target="_blank" rel="noopener">
 												live
 											</a>
 										)}
 										{project.source && (
-											<a href={project.source} rel="noopener">
+											<a href={project.source} target="_blank" rel="noopener">
 												source
 											</a>
 										)}

@@ -18,7 +18,6 @@ const description =
 		<Header />
 		<main>
 			<header class="page-header">
-				<img class="avatar" src="/avatar.jpg" alt="Nick Donohue" width="72" height="72" />
 				<h1>About</h1>
 			</header>
 
@@ -30,30 +29,30 @@ const description =
 
 				<p>
 					Most of my projects are personal infrastructure in one form or another:
-					<a href="https://github.com/algonormative/skiff">skiff</a> is container orchestration
+					<a target="_blank" rel="noopener" href="https://github.com/algonormative/skiff">skiff</a> is container orchestration
 					for macOS and Linux — a single-binary control plane between docker-compose and
-					Kubernetes; <a href="https://github.com/algonormative/lookout">lookout</a> is an
+					Kubernetes; <a target="_blank" rel="noopener" href="https://github.com/algonormative/lookout">lookout</a> is an
 					OpenTelemetry trace collector built for AI-agent workflows; and
-					<a href="https://github.com/algonormative/smpl">smpl</a> is a composable,
+					<a target="_blank" rel="noopener" href="https://github.com/algonormative/smpl">smpl</a> is a composable,
 					content-addressed audio-analysis toolchain you pipe like jq. AI coding agents run
 					through all of it — much of this tooling exists so that agents can operate it,
 					and I haven't written code without an AI pair in over a year.
 				</p>
 
 				<p>
-					Away from the terminal, I make <a href="https://github.com/algonormative/hatch3d">pen-plotter
+					Away from the terminal, I make <a target="_blank" rel="noopener" href="https://github.com/algonormative/hatch3d">pen-plotter
 					art</a> on an AxiDraw and write Rust firmware for Eurorack modules on the
 					Electrosmith Daisy platform — a
-					<a href="https://github.com/algonormative/qpas-ish">stereo resonant filter</a> and a
-					<a href="https://github.com/algonormative/duopulse">two-voice drum sequencer</a> so
+					<a target="_blank" rel="noopener" href="https://github.com/algonormative/qpas-ish">stereo resonant filter</a> and a
+					<a target="_blank" rel="noopener" href="https://github.com/algonormative/duopulse">two-voice drum sequencer</a> so
 					far. The full list is on the <a href="/projects">projects page</a>.
 				</p>
 
 				<p>
 					Two small public properties live under the Lemon name:
-					<a href="https://lemon.audio">LEMON AUDIO</a>, home of a browser-based firmware
+					<a target="_blank" rel="noopener" href="https://lemon.audio">LEMON AUDIO</a>, home of a browser-based firmware
 					flasher for Daisy-platform Eurorack modules, and
-					<a href="https://lemon-agent.dev">Lemon Agent</a>, a free course and set of field
+					<a target="_blank" rel="noopener" href="https://lemon-agent.dev">Lemon Agent</a>, a free course and set of field
 					guides for safe, verifiable coding-agent workflows.
 				</p>
 
@@ -66,13 +65,13 @@ const description =
 				</p>
 
 				<p>
-					Elsewhere: <a href="https://github.com/algonormative" rel="me">GitHub</a>,
-					<a href="https://x.com/algonormative" rel="me">X</a>,
-					<a href="https://www.linkedin.com/in/ndonohue" rel="me">LinkedIn</a>, or email
+					Elsewhere: <a href="https://github.com/algonormative" target="_blank" rel="me noopener">GitHub</a>,
+					<a href="https://x.com/algonormative" target="_blank" rel="me noopener">X</a>,
+					<a href="https://www.linkedin.com/in/nick-donohue-56801871/" target="_blank" rel="me noopener">LinkedIn</a>, or email
 					<a href="mailto:nick@algonormative.net">nick@algonormative.net</a>. Subscribe via
 					<a href="/rss.xml">RSS</a>. The two Lemon properties are already up:
-					<a href="https://lemon.audio">lemon.audio</a> and
-					<a href="https://lemon-agent.dev">lemon-agent.dev</a>.
+					<a target="_blank" rel="noopener" href="https://lemon.audio">lemon.audio</a> and
+					<a target="_blank" rel="noopener" href="https://lemon-agent.dev">lemon-agent.dev</a>.
 				</p>
 			</div>
 		</main>
@@ -82,9 +81,6 @@ const description =
 
 <style>
 	.page-header {
-		display: flex;
-		align-items: center;
-		gap: var(--space-m);
 		padding: var(--space-l) 0;
 		border-bottom: 1px solid var(--rule);
 		margin-bottom: var(--space-xl);
@@ -99,13 +95,5 @@ const description =
 	.prose p {
 		line-height: 1.7;
 		margin: 0 0 var(--space-m);
-	}
-	.avatar {
-		width: 72px;
-		height: 72px;
-		border-radius: 50%;
-		box-shadow: 0 0 0 1px var(--fg);
-		object-fit: cover;
-		flex-shrink: 0;
 	}
 </style>

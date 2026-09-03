@@ -41,16 +41,13 @@ const plateBlurbs: Record<string, string> = {
 				<div class="hero">
 					<Hatch spacing={9} style="surface" class="hero-surface" />
 					<div class="hero-copy">
-						<div class="byline">
-							<img class="avatar" src="/avatar.jpg" alt="" width="56" height="56" loading="eager" />
-							<span class="stamp">Nick Donohue</span>
-						</div>
+						<span class="stamp">Nick Donohue</span>
 						<h1><span class="word">algonormative</span></h1>
 						<p>{SITE_DESCRIPTION}</p>
 						<ul class="socials">
-							<li><a href="https://github.com/algonormative" rel="me">GitHub</a></li>
-							<li><a href="https://x.com/algonormative" rel="me">X</a></li>
-							<li><a href="https://www.linkedin.com/in/ndonohue" rel="me">LinkedIn</a></li>
+							<li><a href="https://github.com/algonormative" target="_blank" rel="me noopener">GitHub</a></li>
+							<li><a href="https://x.com/algonormative" target="_blank" rel="me noopener">X</a></li>
+							<li><a href="https://www.linkedin.com/in/nick-donohue-56801871/" target="_blank" rel="me noopener">LinkedIn</a></li>
 							<li><a href="mailto:nick@algonormative.net">Email</a></li>
 							<li><a href="/rss.xml">RSS</a></li>
 						</ul>
@@ -285,22 +282,6 @@ const plateBlurbs: Record<string, string> = {
 			right: var(--space-s);
 			bottom: var(--space-s);
 		}
-	}
-	/* Byline: the GitHub portrait beside the name stamp */
-	.byline {
-		display: flex;
-		align-items: center;
-		gap: var(--space-2xs);
-	}
-	.avatar {
-		width: 56px;
-		height: 56px;
-		border-radius: 50%;
-		border: 2px solid var(--bg);
-		box-shadow: 0 0 0 1px var(--fg);
-		object-fit: cover;
-		background: var(--bg);
-		flex-shrink: 0;
 	}
 	/* Socials: small paper chips so the links read over the hatching */
 	.socials {
