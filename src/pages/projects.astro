@@ -3,10 +3,18 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
+import domains from '../data/domains.json';
 import projects from '../data/projects.json';
 
+const groups = domains.map((domain) => ({
+	domain,
+	items: projects
+		.filter((p) => p.domain === domain.slug)
+		.sort((a, b) => Number(b.featured) - Number(a.featured)),
+}));
+
 const title = `Projects · ${SITE_TITLE}`;
-const description = 'Things I have built — personal tools for music, art, and thinking.';
+const description = 'Everything, in one index. Personal tools for sound, ink, agents, and play.';
 ---
 
 <!doctype html>
@@ -17,116 +25,185 @@ const description = 'Things I have built — personal tools for music, art, and 
 	<body>
 		<Header />
 		<main>
-			<header class="page-header">
-				<h1>Projects</h1>
-				<p class="lede">
-					Personal tools and experiments. Most are in active use; a few are archived or
-					on pause. Source on <a href="https://github.com/algonormative">GitHub</a>.
-				</p>
+			<header class="titleblock">
+				<div>
+					<div class="eyebrow">Index · every plate</div>
+					<h1>Projects</h1>
+				</div>
+				<div class="tb mono">
+					<span><b>Entries</b>{projects.length}</span>
+					<span><b>Plates</b>{domains.length}</span>
+					<span><b>Source</b><a href="https://github.com/algonormative">GitHub</a></span>
+				</div>
 			</header>
 
-			<ul class="projects">
-				{projects.map((project) => (
-					<li>
-						<article>
-							<header class="card-header">
-								<h2><a href={project.href}>{project.name}</a></h2>
-								<p class="tagline">{project.tagline}</p>
-							</header>
-							<p class="blurb">{project.blurb}</p>
-							{project.tags && project.tags.length > 0 && (
-								<ul class="tags">
-									{project.tags.map((tag) => <li>{tag}</li>)}
-								</ul>
-							)}
-						</article>
-					</li>
-				))}
-			</ul>
+			<p class="lede">
+				Everything in one place. Each group has its own plate with more detail: {
+					domains.map((d, i) => (
+						<><a href={`/${d.slug}`}>{d.name.toLowerCase()}</a>{i < domains.length - 1 ? ', ' : '.'}</>
+					))
+				}
+			</p>
+
+			{
+				groups.map(({ domain, items }) => (
+					<section class="group">
+						<div class="section-head">
+							<h2>
+								<a href={`/${domain.slug}`}>{domain.name}</a>
+							</h2>
+							<span class="mono">/{domain.slug}</span>
+						</div>
+						<ul class="rows">
+							{items.map((project) => (
+								<li>
+									<span class="t">
+										<span class="name">{project.name}</span>
+										<span class="tagline"> {project.tagline}</span>
+									</span>
+									<span class="row-meta mono">
+										{project.live && (
+											<a href={project.live} rel="noopener">
+												live
+											</a>
+										)}
+										{project.source && (
+											<a href={project.source} rel="noopener">
+												source
+											</a>
+										)}
+									</span>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
 		</main>
 		<Footer />
 	</body>
 </html>
 
 <style>
-	.page-header {
-		padding: var(--space-l) 0;
-		border-bottom: 1px solid var(--rule);
-		margin-bottom: var(--space-xl);
-	}
-	.page-header h1 {
-		margin: 0 0 var(--space-s);
-		font-size: var(--step-4);
-	}
-	.lede {
-		font-size: var(--step-1);
-		color: var(--muted);
-		margin: 0;
-		max-width: 38em;
-		line-height: 1.5;
+	main {
+		width: 1120px;
+		max-width: calc(100% - 2em);
+		margin: auto;
+		padding: 0 0 var(--space-l);
 	}
 
-	.projects {
-		list-style: none;
-		padding: 0;
-		margin: 0;
+	.titleblock {
 		display: grid;
-		gap: var(--space-m);
-		grid-template-columns: 1fr;
+		grid-template-columns: 1fr auto;
+		gap: var(--space-s) var(--space-l);
+		border-bottom: 2px solid var(--fg);
+		padding: var(--space-m) 0 var(--space-xs);
+		align-items: end;
 	}
-	.projects > li article {
-		padding: var(--space-m);
-		border: 1px solid var(--rule);
-		border-radius: var(--radius-m);
-		transition: border-color 80ms ease;
+	.titleblock h1 {
+		margin: var(--space-3xs) 0 0;
+		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-variation-settings: 'opsz' 72;
 	}
-	.projects > li article:hover {
-		border-color: var(--accent);
+	.tb {
+		display: grid;
+		grid-template-columns: auto auto auto;
+		gap: var(--space-3xs) var(--space-m);
+		text-align: right;
+		color: var(--muted);
+	}
+	.tb b {
+		color: var(--fg);
+		font-weight: 600;
+		display: block;
+	}
+	@media (max-width: 720px) {
+		.titleblock {
+			grid-template-columns: 1fr;
+		}
+		.tb {
+			text-align: left;
+		}
 	}
 
-	.card-header {
-		margin-bottom: var(--space-s);
+	.lede {
+		max-width: var(--measure);
+		font-size: 1.1rem;
+		line-height: 1.6;
+		margin: var(--space-l) 0 0;
 	}
-	.card-header h2 {
-		font-family: var(--font-mono);
-		font-size: var(--step-1);
-		margin: 0 0 var(--space-3xs);
-		font-weight: 700;
+
+	.group {
+		margin-top: var(--space-xl);
 	}
-	.card-header h2 a {
+	.section-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: var(--space-s);
+		border-bottom: 1px solid var(--rule);
+		padding-bottom: var(--space-3xs);
+	}
+	.section-head h2 {
+		margin: 0;
+		font-size: 1.4rem;
+		font-weight: 800;
+	}
+	.section-head h2 a {
 		color: var(--fg);
 		text-decoration: none;
 	}
-	.card-header h2 a:hover {
-		color: var(--accent);
+	.section-head h2 a:hover {
+		box-shadow: inset 0 -3px 0 var(--lemon);
 	}
-	.tagline {
-		font-family: var(--font-mono);
-		font-size: 0.85rem;
+	.section-head .mono {
 		color: var(--muted);
-		margin: 0;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-	.blurb {
-		margin: 0 0 var(--space-s);
-		line-height: 1.6;
 	}
 
-	.tags {
+	.rows {
 		list-style: none;
-		padding: 0;
 		margin: 0;
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--space-3xs);
+		padding: 0;
 	}
-	.tags > li {
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
+	.rows > li {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: var(--space-s);
+		padding: var(--space-2xs) 0;
+		border-top: 1px solid var(--rule);
+		align-items: baseline;
+	}
+	.rows > li:first-child {
+		border-top: none;
+	}
+	.name {
+		font-weight: 700;
+	}
+	.tagline {
 		color: var(--muted);
-		padding: 0.15em 0.5em;
-		border: 1px solid var(--rule);
-		border-radius: var(--radius-s);
+		font-size: 0.95rem;
+	}
+	.row-meta {
+		color: var(--muted);
+		white-space: nowrap;
+		display: inline-flex;
+		gap: var(--space-2xs);
+	}
+	.row-meta a {
+		color: var(--accent);
+		text-decoration: none;
+		border-bottom: 1px solid var(--rule);
+	}
+	.row-meta a:hover,
+	.row-meta a:focus-visible {
+		border-bottom-color: var(--lemon);
+		border-bottom-width: 3px;
+	}
+
+	@media (max-width: 560px) {
+		.rows > li {
+			grid-template-columns: 1fr;
+			gap: var(--space-3xs);
+		}
 	}
 </style>

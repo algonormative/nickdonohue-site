@@ -15,6 +15,34 @@
 	font-display: swap;
 }
 
+/*
+  Display + utility faces, self-hosted (SIL Open Font License 1.1).
+  Both are variable fonts, latin subset only. The weight range is declared so
+  one file covers every weight the site uses. Nothing is fetched at runtime.
+*/
+@font-face {
+	font-family: "Bricolage Grotesque";
+	src: url("/fonts/bricolage-grotesque-latin.woff2") format("woff2");
+	font-weight: 200 800;
+	font-stretch: 100%;
+	font-style: normal;
+	font-display: swap;
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+		U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+		U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: "Martian Mono";
+	src: url("/fonts/martian-mono-latin.woff2") format("woff2");
+	font-weight: 100 800;
+	font-stretch: 100%;
+	font-style: normal;
+	font-display: swap;
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+		U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+		U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 *,
 *::before,
 *::after {
@@ -60,13 +88,16 @@ h5,
 h6 {
 	font-family: var(--font-display);
 	font-weight: 700;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.02em;
 	margin: var(--space-l) 0 var(--space-s);
 	color: var(--fg);
 	line-height: 1.15;
+	text-wrap: balance;
 }
 h1 {
 	font-size: var(--step-4);
+	font-weight: 800;
+	line-height: 1.05;
 	margin-top: 0;
 }
 h2 {
@@ -110,9 +141,10 @@ b {
 	font-weight: 700;
 }
 
+/* Martian Mono runs wide, so code sits a notch smaller than the old Menlo. */
 code {
 	font-family: var(--font-mono);
-	font-size: 0.92em;
+	font-size: 0.82em;
 	background: var(--code-bg);
 	color: var(--code-fg);
 	padding: 0.1em 0.35em;
@@ -126,8 +158,8 @@ pre {
 	padding: var(--space-s) var(--space-m);
 	border-radius: var(--radius-m);
 	overflow-x: auto;
-	line-height: 1.5;
-	font-size: 0.92em;
+	line-height: 1.6;
+	font-size: 0.78em;
 	border: 1px solid var(--rule);
 }
 pre > code {
@@ -155,7 +187,7 @@ pre > code {
 }
 
 blockquote {
-	border-left: 3px solid var(--accent);
+	border-left: 3px solid var(--lemon);
 	padding: 0 0 0 var(--space-m);
 	margin: var(--space-m) 0;
 	color: var(--muted);
@@ -188,10 +220,12 @@ td {
 }
 th {
 	font-family: var(--font-mono);
-	font-size: 0.85em;
+	font-size: 0.72rem;
+	font-weight: 600;
 	text-transform: uppercase;
-	letter-spacing: 0.05em;
+	letter-spacing: 0.04em;
 	color: var(--muted);
+	border-bottom: 2px solid var(--fg);
 }
 
 textarea,
@@ -226,6 +260,36 @@ input {
 	h2 {
 		font-size: var(--step-2);
 	}
+}
+
+/*
+  Drafting-sheet utilities. The mono face is used small and sparingly so it
+  stamps rather than shouts.
+*/
+.mono {
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+}
+.eyebrow {
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	font-weight: 600;
+	color: var(--muted);
+}
+/* The lemon stamp: one mark per page. Fill behind ink, never ink on paper. */
+.stamp {
+	display: inline-block;
+	background: var(--lemon);
+	color: var(--lemon-fg);
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	padding: 0.15em 0.4em;
 }
 
 .sr-only {
