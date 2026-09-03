@@ -1,4 +1,16 @@
-name: Deploy to GitHub Pages
+name: Deploy to Cloudflare
+
+# algonormative.net is served by a Cloudflare Worker with static assets
+# (.cloudflare/site/wrangler.toml). Every push to main builds the site and
+# deploys it, provided the repository has the two Cloudflare secrets:
+#
+#   CLOUDFLARE_API_TOKEN   an API token with Workers Scripts:Edit and
+#                          Workers Routes:Edit on the account (the
+#                          "Edit Cloudflare Workers" template is enough)
+#   CLOUDFLARE_ACCOUNT_ID  the account id shown by `wrangler whoami`
+#
+# Until the token exists the deploy job is skipped, not failed, and the site
+# is deployed by hand with `npx wrangler deploy --config .cloudflare/site/wrangler.toml`.
 
 on:
   push:
@@ -7,16 +19,16 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: cloudflare-deploy
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      has_token: ${{ steps.gate.outputs.has_token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,23 +38,29 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          # Without this block the secret is invisible to the build and the site
-          # ships with analytics silently disabled — which is exactly what had
-          # happened: src/components/PostHog.astro has existed for a while,
-          # gated on `import.meta.env.PROD && Boolean(apiKey)`, and apiKey was
-          # never reaching it. Astro bakes PUBLIC_ vars in at build time, so
-          # this is the only moment it can be read.
+          # Astro bakes PUBLIC_ vars in at build time; without this the
+          # PostHog component ships silently disabled.
           PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
-      - uses: actions/upload-pages-artifact@v3
+      - id: gate
+        run: echo "has_token=${{ secrets.CLOUDFLARE_API_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
         with:
+          name: dist
           path: dist
+          retention-days: 1
 
   deploy:
     needs: build
+    if: needs.build.outputs.has_token == 'true'
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config .cloudflare/site/wrangler.toml

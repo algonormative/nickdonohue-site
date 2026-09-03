@@ -24,3 +24,6 @@ binding = "ASSETS"
 directory = "../../dist"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
+# Let the fetch handler see every request, so www and http normalise
+# before an asset is served.
+run_worker_first = true

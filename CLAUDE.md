@@ -1,6 +1,6 @@
 # Website
 
-Personal site at [algonormative.net](https://algonormative.net) (previously nickdonohue.net, which now 302-redirects here). Astro 5, deployed to GitHub Pages via GitHub Actions. **Public repo** — advanced drafts (`draft: true`) and published content live here; raw capture / develop / shape happens in `~/git/vault/writing/`. Drafts are visible in the source tree but filtered out of the production build.
+Personal site at [algonormative.net](https://algonormative.net) (previously nickdonohue.net, which now 302-redirects here). Astro 5, served by a Cloudflare Worker (static assets) and deployed by GitHub Actions. **Public repo** — advanced drafts (`draft: true`) and published content live here; raw capture / develop / shape happens in `~/git/vault/writing/`. Drafts are visible in the source tree but filtered out of the production build.
 
 ## Structure
 
@@ -13,9 +13,10 @@ src/layouts/                  BlogPost + MoltPost wrappers
 src/styles/                   tokens.css (light/dark theme), global.css
 src/data/projects.json        Projects page data
 public/                       Static assets (avatar, favicon, robots, fonts)
+.cloudflare/site/             The site itself: Worker + static assets on algonormative.net (wrangler deploy)
 .cloudflare/redirect/         chronick.net (301) + nickdonohue.net (302) → algonormative.net Worker (deploy via wrangler)
-public/CNAME                  GitHub Pages custom domain
-.github/workflows/deploy.yml  Build + publish on push to main
+public/CNAME                  Legacy GitHub Pages domain file (Pages origin is shadowed by the redirect Worker)
+.github/workflows/deploy.yml  Build + wrangler deploy on push to main (skips deploy until CLOUDFLARE_API_TOKEN exists)
 .env.example                  PostHog key placeholder
 ```
 
@@ -95,10 +96,23 @@ npm run preview   # local preview of production build
 
 ## Deploy
 
-GitHub Pages, source = GitHub Actions, repo `algonormative/nickdonohue-site` (public). The workflow at `.github/workflows/deploy.yml` runs `npm ci && npm run build` and uploads `dist/` to Pages. Auto-deploys on push to `main`. Custom domain `algonormative.net` (set via `public/CNAME` + GitHub Pages settings; `nickdonohue.net` and `chronick.net` redirect here through the Worker in `.cloudflare/redirect/`).
+Cloudflare Workers with static assets. `npm run build`, then
+`npx wrangler deploy --config .cloudflare/site/wrangler.toml` publishes `dist/`
+to `algonormative.net` and `www.algonormative.net` (Worker custom domains;
+Cloudflare owns the DNS records and certificate). The Worker's fetch handler
+301s http and www to the apex before serving assets. The workflow at
+`.github/workflows/deploy.yml` does the same on push to `main` once the
+`CLOUDFLARE_API_TOKEN` secret exists; until then it builds and skips the
+deploy, and the site is deployed by hand.
+
+Retired domains: `nickdonohue.net` (302) and `chronick.net` (301) redirect to
+the same path on algonormative.net through the Worker in
+`.cloudflare/redirect/` (`npx wrangler deploy` from that directory). The
+nickdonohue.net GitHub Pages origin still exists but is shadowed by that
+Worker route.
 
 The separate `algonormative/algonormative.github.io` repo (cloned at `~/git/website`) is **not** this site — it is the user-pages repo that serves project pages at `algonormative.github.io/<repo>`. It must stay domain-free: a `CNAME` there 301-redirects every project page. Never add one, and never shape drafts into that clone.
 
 PostHog analytics need the `PUBLIC_POSTHOG_KEY` repository secret — `gh secret set PUBLIC_POSTHOG_KEY --repo algonormative/nickdonohue-site` once available. The PostHog component is gated on `import.meta.env.PROD && Boolean(apiKey)` so absence is fine.
 
-The chronick.net 301-redirect Worker lives under `.cloudflare/redirect/` — `wrangler deploy` to ship. Cloudflare hosts the redirect; GitHub Pages hosts the site itself.
+Both Workers are deployed with the wrangler OAuth login on this machine; nothing about hosting lives in GitHub Pages settings any more.

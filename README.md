@@ -1,6 +1,6 @@
 # algonormative.net
 
-Personal site. Astro 5, deployed to GitHub Pages.
+Personal site. Astro 5, served by a Cloudflare Worker with static assets.
 
 - Live: <https://algonormative.net>
 - Previous domain: nickdonohue.net (302-redirects via the Worker under `.cloudflare/redirect/`)
