@@ -1,0 +1,176 @@
+---
+/*
+  Hatch: a hatched height-field surface, drawn in the browser.
+
+  The same idea hatch3d uses on the plotter: a small height field, parallel
+  lines displaced along the surface normal, and a second half-offset pass only
+  where the field dips, so shaded regions get double density. One ink, one line
+  weight, tone from density.
+
+  Ink comes from the --hatch token, so the drawing follows the theme.
+  Omit `seed` and the surface is seeded per visit; pass the domain slug and the
+  plate stays recognisable from one visit to the next.
+*/
+interface Props {
+	seed?: string;
+	angle?: number;
+	spacing?: number;
+	class?: string;
+}
+
+const { seed, angle = 8, spacing = 8, class: className } = Astro.props;
+---
+
+<canvas
+	class:list={['hatch', className]}
+	data-hatch
+	data-seed={seed}
+	data-angle={angle}
+	data-spacing={spacing}
+	role="presentation"
+	aria-hidden="true"></canvas>
+
+<style>
+	.hatch {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+
+<script>
+	// One instance script for every canvas on the page.
+	(() => {
+		// Small seeded PRNG so each plate is stable and the hero varies per visit.
+		function rng(seed: string) {
+			let h = 2166136261;
+			for (let i = 0; i < seed.length; i++) {
+				h ^= seed.charCodeAt(i);
+				h = Math.imul(h, 16777619);
+			}
+			return () => {
+				h += 0x6d2b79f5;
+				let t = h;
+				t = Math.imul(t ^ (t >>> 15), t | 1);
+				t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+				return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+			};
+		}
+
+		function inkColor() {
+			return (
+				getComputedStyle(document.documentElement).getPropertyValue('--hatch').trim() ||
+				'#171b2a'
+			);
+		}
+
+		// Height field: three seeded sine ridges. Hatch lines are displaced by the
+		// field; a second, half-offset pass is drawn only where the field dips.
+		function drawHatch(
+			canvas: HTMLCanvasElement,
+			seed: string,
+			angleDeg: number,
+			spacingPx: number,
+		) {
+			const dpr = Math.min(window.devicePixelRatio || 1, 2);
+			const w = canvas.clientWidth;
+			const h = canvas.clientHeight;
+			if (!w || !h) return;
+			canvas.width = Math.round(w * dpr);
+			canvas.height = Math.round(h * dpr);
+			const ctx = canvas.getContext('2d');
+			if (!ctx) return;
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			ctx.clearRect(0, 0, w, h);
+
+			const r = rng(seed);
+			const waves = Array.from({ length: 3 }, () => ({
+				fx: ((0.4 + r() * 1.6) * Math.PI * 2) / Math.max(w, h),
+				fy: ((0.4 + r() * 1.6) * Math.PI * 2) / Math.max(w, h),
+				ph: r() * Math.PI * 2,
+				amp: 0.5 + r() * 0.8,
+			}));
+			const total = waves.reduce((a, o) => a + o.amp, 0);
+			const field = (x: number, y: number) =>
+				waves.reduce((z, o) => z + o.amp * Math.sin(o.fx * x + o.fy * y + o.ph), 0) / total;
+
+			const a = (angleDeg * Math.PI) / 180;
+			const dir = { x: Math.cos(a), y: Math.sin(a) };
+			const nrm = { x: -dir.y, y: dir.x };
+			const diag = Math.hypot(w, h);
+			const amp = Math.min(w, h) * 0.06;
+			const step = 3;
+			ctx.strokeStyle = inkColor();
+			ctx.lineCap = 'round';
+			ctx.lineWidth = 0.9;
+
+			function pass(offset: number, onlyShadow: boolean) {
+				for (let d = -diag + offset; d < diag; d += spacingPx) {
+					const bx = w / 2 + nrm.x * d;
+					const by = h / 2 + nrm.y * d;
+					let pen = false;
+					ctx!.beginPath();
+					for (let t = -diag / 2; t <= diag / 2; t += step) {
+						const x0 = bx + dir.x * t;
+						const y0 = by + dir.y * t;
+						const z = field(x0, y0);
+						const x = x0 + nrm.x * z * amp;
+						const y = y0 + nrm.y * z * amp;
+						const inside = x >= -2 && x <= w + 2 && y >= -2 && y <= h + 2;
+						const on = inside && (!onlyShadow || z < -0.15);
+						if (on && !pen) {
+							ctx!.moveTo(x, y);
+							pen = true;
+						} else if (on) {
+							ctx!.lineTo(x, y);
+						} else {
+							pen = false;
+						}
+					}
+					ctx!.stroke();
+				}
+			}
+
+			pass(0, false);
+			ctx.globalAlpha = 0.85;
+			pass(spacingPx / 2, true);
+			ctx.globalAlpha = 1;
+		}
+
+		function drawOne(canvas: HTMLCanvasElement) {
+			// A canvas with no seed gets one per visit, fixed for the page's lifetime
+			// so a resize or a theme flip redraws the same surface.
+			if (!canvas.dataset.seed) {
+				canvas.dataset.seed = 'visit-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+			}
+			drawHatch(
+				canvas,
+				canvas.dataset.seed,
+				Number(canvas.dataset.angle ?? 8),
+				Number(canvas.dataset.spacing ?? 8),
+			);
+		}
+
+		function drawAll() {
+			document
+				.querySelectorAll<HTMLCanvasElement>('canvas[data-hatch]')
+				.forEach((c) => drawOne(c));
+		}
+
+		let raf = 0;
+		function schedule() {
+			cancelAnimationFrame(raf);
+			raf = requestAnimationFrame(drawAll);
+		}
+
+		window.addEventListener('resize', schedule);
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', schedule);
+		new MutationObserver(schedule).observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme'],
+		});
+
+		// Nothing animates, so reduced-motion needs no special case: draw once.
+		drawAll();
+	})();
+</script>

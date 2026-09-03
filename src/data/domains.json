@@ -1,0 +1,30 @@
+[
+	{
+		"slug": "sound",
+		"name": "Sound",
+		"angle": 0,
+		"intro": "PERIGEE is a five-track EP conducted by a coding agent on an Analog Rytm drum machine. Other work includes firmware for Eurorack modules, a browser-based techno loop generator, and LEMON AUDIO, a music platform.",
+		"tags": ["audio", "eurorack", "music", "synthesis", "sound"]
+	},
+	{
+		"slug": "ink",
+		"name": "Ink",
+		"angle": 45,
+		"intro": "hatch3d turns 3D surfaces into hatching for an AxiDraw pen plotter. InkSight creates reports that help coding agents inspect plotter SVGs.",
+		"tags": ["plotter-art", "svg", "legibility", "art"]
+	},
+	{
+		"slug": "agents",
+		"name": "Agents",
+		"angle": 90,
+		"intro": "Lemon Agent is a course on safe coding-agent work. lookout, skiff, nanoclaw, and the rest of the software stack support agents running on the Mac mini in the closet.",
+		"tags": ["agents", "claude-code", "codex", "tooling", "ai", "measurement", "infra"]
+	},
+	{
+		"slug": "play",
+		"name": "Play",
+		"angle": 135,
+		"intro": "feltmath is a blackjack and hold'em trainer. Typing Arena is a local multiplayer typing game. BrightPath Global Solutions is a consultancy that does not exist.",
+		"tags": ["games", "satire", "web"]
+	}
+]
