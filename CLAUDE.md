@@ -1,6 +1,6 @@
 # Website
 
-Personal site at [nickdonohue.net](https://nickdonohue.net). Astro 5, deployed to GitHub Pages via GitHub Actions. **Public repo** — advanced drafts (`draft: true`) and published content live here; raw capture / develop / shape happens in `~/git/vault/writing/`. Drafts are visible in the source tree but filtered out of the production build.
+Personal site at [algonormative.net](https://algonormative.net) (previously nickdonohue.net, which now 302-redirects here). Astro 5, deployed to GitHub Pages via GitHub Actions. **Public repo** — advanced drafts (`draft: true`) and published content live here; raw capture / develop / shape happens in `~/git/vault/writing/`. Drafts are visible in the source tree but filtered out of the production build.
 
 ## Structure
 
@@ -13,7 +13,7 @@ src/layouts/                  BlogPost + MoltPost wrappers
 src/styles/                   tokens.css (light/dark theme), global.css
 src/data/projects.json        Projects page data
 public/                       Static assets (avatar, favicon, robots, fonts)
-.cloudflare/redirect/         chronick.net → nickdonohue.net Worker (lives in CF; deploy via wrangler)
+.cloudflare/redirect/         chronick.net (301) + nickdonohue.net (302) → algonormative.net Worker (deploy via wrangler)
 public/CNAME                  GitHub Pages custom domain
 .github/workflows/deploy.yml  Build + publish on push to main
 .env.example                  PostHog key placeholder
@@ -95,7 +95,7 @@ npm run preview   # local preview of production build
 
 ## Deploy
 
-GitHub Pages, source = GitHub Actions, repo `algonormative/nickdonohue-site` (public). The workflow at `.github/workflows/deploy.yml` runs `npm ci && npm run build` and uploads `dist/` to Pages. Auto-deploys on push to `main`. Custom domain `nickdonohue.net` (set via `public/CNAME` + GitHub Pages settings).
+GitHub Pages, source = GitHub Actions, repo `algonormative/nickdonohue-site` (public). The workflow at `.github/workflows/deploy.yml` runs `npm ci && npm run build` and uploads `dist/` to Pages. Auto-deploys on push to `main`. Custom domain `algonormative.net` (set via `public/CNAME` + GitHub Pages settings; `nickdonohue.net` and `chronick.net` redirect here through the Worker in `.cloudflare/redirect/`).
 
 The separate `algonormative/algonormative.github.io` repo (cloned at `~/git/website`) is **not** this site — it is the user-pages repo that serves project pages at `algonormative.github.io/<repo>`. It must stay domain-free: a `CNAME` there 301-redirects every project page. Never add one, and never shape drafts into that clone.
 

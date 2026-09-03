@@ -2,9 +2,12 @@ name = "chronick-redirect"
 main = "src/index.js"
 compatibility_date = "2026-05-12"
 
-# Bind the worker to all requests on chronick.net and www.chronick.net.
-# Each route lives on the chronick.net zone.
+# One Worker redirects every retired personal domain to algonormative.net.
+# Each route lives on its own zone; the status code is chosen per host in
+# src/index.js (chronick.net is a permanent 301, nickdonohue.net a 302).
 routes = [
 	{ pattern = "chronick.net/*", zone_name = "chronick.net" },
 	{ pattern = "www.chronick.net/*", zone_name = "chronick.net" },
+	{ pattern = "nickdonohue.net/*", zone_name = "nickdonohue.net" },
+	{ pattern = "www.nickdonohue.net/*", zone_name = "nickdonohue.net" },
 ]
