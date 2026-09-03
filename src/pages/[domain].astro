@@ -37,7 +37,6 @@ const related = [
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const title = `${domain.name} · ${SITE_TITLE}`;
-const rev = new Date().toISOString().slice(0, 10);
 // The site map lives in domains.json; this keeps the head description honest.
 const description = domain.intro.split('. ')[0] + '.';
 ---
@@ -58,7 +57,6 @@ const description = domain.intro.split('. ')[0] + '.';
 				<div class="tb mono">
 					<span><b>Sheet</b>/{domain.slug}</span>
 					<span><b>Entries</b>{rows.length}</span>
-					<span><b>Rev</b>{rev}</span>
 				</div>
 			</header>
 

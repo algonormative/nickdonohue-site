@@ -53,7 +53,7 @@
 	--fg: #171b2a;
 	--muted: #5e6472;
 	--rule: #c9cdc2;
-	--accent: #6e8500;
+	--accent: #5c7000;
 	--accent-hover: #566800;
 	--accent-fg: #f2f3ee;
 	--code-bg: #e9ebe3;
@@ -71,7 +71,7 @@
 	/* Tag palette, muted variants on paper */
 	--tag-cyan: #2c7878;
 	--tag-pink: #a13568;
-	--tag-lime: #6e8500;
+	--tag-lime: #5c7000;
 	--tag-orange: #9b5400;
 	--tag-purple: #5a3a80;
 }
