@@ -1,0 +1,306 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Hatch from '../components/Hatch.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import domains from '../data/domains.json';
+import projects from '../data/projects.json';
+
+export function getStaticPaths() {
+	// One plate per domain, numbered in the order they appear on the home page.
+	return domains.map((domain, i) => ({
+		params: { domain: domain.slug },
+		props: { domain, plate: i + 1 },
+	}));
+}
+
+const { domain, plate } = Astro.props;
+
+const rows = projects
+	.filter((p) => p.domain === domain.slug)
+	.sort((a, b) => Number(b.featured) - Number(a.featured));
+
+const published = ({ data }: { data: { draft: boolean } }) =>
+	import.meta.env.PROD ? !data.draft : true;
+
+const blog = await getCollection('blog', published);
+const molt = await getCollection('molt', published);
+
+const related = [
+	...blog.map((p) => ({ kind: 'Blog', href: `/blog/${p.id}/`, data: p.data })),
+	...molt.map((p) => ({ kind: 'Molt', href: `/molt/${p.id}/`, data: p.data })),
+]
+	.filter((p) => (p.data.tags ?? []).some((tag) => domain.tags.includes(tag)))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const title = `${domain.name} · ${SITE_TITLE}`;
+const rev = new Date().toISOString().slice(0, 10);
+// The site map lives in domains.json; this keeps the head description honest.
+const description = domain.intro.split('. ')[0] + '.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<header class="titleblock">
+				<div>
+					<div class="eyebrow">plate {plate} · {domain.name}</div>
+					<h1>{domain.name}</h1>
+				</div>
+				<div class="tb mono">
+					<span><b>Sheet</b>/{domain.slug}</span>
+					<span><b>Entries</b>{rows.length}</span>
+					<span><b>Rev</b>{rev}</span>
+				</div>
+			</header>
+
+			<Hatch seed={domain.slug} angle={domain.angle} spacing={7} class="banner" />
+
+			<p class="lede">{domain.intro}</p>
+
+			<section class="index">
+				<div class="section-head">
+					<span class="eyebrow">Index</span>
+					<a class="mono" href="/projects">everything</a>
+				</div>
+				<ul class="rows">
+					{
+						rows.map((project) => (
+							<li>
+								<div class="t">
+									<span class="name">{project.name}</span>
+									<span class="tagline mono">{project.tagline}</span>
+									<p class="blurb">{project.blurb}</p>
+									{project.tags && project.tags.length > 0 && (
+										<ul class="tags">
+											{project.tags.map((tag) => (
+												<li>{tag}</li>
+											))}
+										</ul>
+									)}
+								</div>
+								<div class="row-meta mono">
+									{project.live && (
+										<a href={project.live} rel="noopener">
+											live
+										</a>
+									)}
+									{project.source && (
+										<a href={project.source} rel="noopener">
+											source
+										</a>
+									)}
+								</div>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			{
+				related.length > 0 && (
+					<section class="index">
+						<div class="section-head">
+							<span class="eyebrow">Related writing</span>
+							<a class="mono" href="/writing">
+								all posts
+							</a>
+						</div>
+						<ul class="rows posts">
+							{related.map((post) => (
+								<li>
+									<a class="t" href={post.href}>
+										{post.data.title} <small>{post.kind}</small>
+									</a>
+									<span class="row-meta mono">
+										<FormattedDate date={post.data.pubDate} />
+									</span>
+								</li>
+							))}
+						</ul>
+					</section>
+				)
+			}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main {
+		width: 1120px;
+		max-width: calc(100% - 2em);
+		margin: auto;
+		padding: 0 0 var(--space-l);
+	}
+
+	.titleblock {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: var(--space-s) var(--space-l);
+		border-bottom: 2px solid var(--fg);
+		padding: var(--space-m) 0 var(--space-xs);
+		align-items: end;
+	}
+	.titleblock h1 {
+		margin: var(--space-3xs) 0 0;
+		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-variation-settings: 'opsz' 72;
+	}
+	.tb {
+		display: grid;
+		grid-template-columns: auto auto auto;
+		gap: var(--space-3xs) var(--space-m);
+		text-align: right;
+		color: var(--muted);
+	}
+	.tb b {
+		color: var(--fg);
+		font-weight: 600;
+		display: block;
+	}
+	@media (max-width: 720px) {
+		.titleblock {
+			grid-template-columns: 1fr;
+		}
+		.tb {
+			text-align: left;
+		}
+	}
+
+	main :global(.banner) {
+		height: clamp(140px, 20vw, 220px);
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.lede {
+		max-width: var(--measure);
+		font-size: 1.1rem;
+		line-height: 1.6;
+		margin: var(--space-l) 0 0;
+	}
+
+	.index {
+		margin-top: var(--space-xl);
+	}
+	.section-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: var(--space-s);
+		border-bottom: 1px solid var(--rule);
+		padding-bottom: var(--space-3xs);
+		margin-bottom: var(--space-s);
+	}
+	.section-head a {
+		text-decoration: none;
+		color: var(--muted);
+	}
+	.section-head a:hover {
+		color: var(--fg);
+		box-shadow: inset 0 -3px 0 var(--lemon);
+	}
+
+	.rows {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.rows > li {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: var(--space-s);
+		padding: var(--space-s) 0;
+		border-top: 1px solid var(--rule);
+		align-items: start;
+	}
+	.rows > li:last-child {
+		border-bottom: 1px solid var(--rule);
+	}
+	.posts > li {
+		align-items: baseline;
+		padding: var(--space-2xs) 0;
+	}
+
+	.name {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 1.15rem;
+		letter-spacing: -0.02em;
+	}
+	.tagline {
+		color: var(--muted);
+		text-transform: uppercase;
+		display: block;
+		margin-top: 0.15em;
+	}
+	.blurb {
+		margin: var(--space-2xs) 0 0;
+		color: var(--fg);
+		font-size: 0.98rem;
+		line-height: 1.55;
+		max-width: var(--measure);
+	}
+	.tags {
+		list-style: none;
+		padding: 0;
+		margin: var(--space-2xs) 0 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3xs);
+	}
+	.tags > li {
+		font-family: var(--font-mono);
+		font-size: 0.66rem;
+		letter-spacing: 0.04em;
+		color: var(--muted);
+		border: 1px solid var(--rule);
+		padding: 0.15em 0.45em;
+	}
+
+	.row-meta {
+		color: var(--muted);
+		white-space: nowrap;
+		display: flex;
+		gap: var(--space-2xs);
+		align-items: baseline;
+	}
+	.row-meta a {
+		color: var(--accent);
+		text-decoration: none;
+		border-bottom: 1px solid var(--rule);
+	}
+	.row-meta a:hover,
+	.row-meta a:focus-visible {
+		border-bottom-color: var(--lemon);
+		border-bottom-width: 3px;
+	}
+
+	.posts .t {
+		font-weight: 700;
+		color: var(--fg);
+		text-decoration: none;
+	}
+	.posts .t:hover {
+		box-shadow: inset 0 -3px 0 var(--lemon);
+	}
+	.posts .t small {
+		font-weight: 400;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 560px) {
+		.rows > li {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

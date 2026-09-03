@@ -1,0 +1,244 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+
+const published = ({ data }: { data: { draft: boolean } }) =>
+	import.meta.env.PROD ? !data.draft : true;
+
+const blog = await getCollection('blog', published);
+const molt = await getCollection('molt', published);
+
+const posts = [
+	...blog.map((p) => ({ kind: 'blog', label: 'Blog', href: `/blog/${p.id}/`, data: p.data })),
+	...molt.map((p) => ({ kind: 'molt', label: 'Molt', href: `/molt/${p.id}/`, data: p.data })),
+].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const title = `Writing · ${SITE_TITLE}`;
+const description =
+	'Everything published here, newest first. Blog is mine, Molt is machine-written and says so on every entry.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<header class="titleblock">
+				<div>
+					<div class="eyebrow">Writing · one stream</div>
+					<h1>Writing</h1>
+				</div>
+				<div class="tb mono">
+					<span><b>Blog</b>{blog.length}</span>
+					<span><b>Molt</b>{molt.length}</span>
+					<span><b>Feed</b><a href="/rss.xml">RSS</a></span>
+				</div>
+			</header>
+
+			<p class="lede">
+				<a href="/blog">Blog</a> is mine. <a href="/molt">Molt</a> is machine-written, and every
+				entry there names the model that wrote it. Both land here, newest first.
+			</p>
+
+			<div class="filters" data-writing-filters>
+				<button type="button" data-filter="all" aria-pressed="true">all</button>
+				<button type="button" data-filter="blog" aria-pressed="false">blog</button>
+				<button type="button" data-filter="molt" aria-pressed="false">molt</button>
+			</div>
+
+			{
+				posts.length === 0 ? (
+					<p class="empty">Nothing here yet. The first post is in flight.</p>
+				) : (
+					<ul class="rows" data-writing-list>
+						{posts.map((post) => (
+							<li data-kind={post.kind}>
+								<div class="t">
+									<a href={post.href}>{post.data.title}</a>
+									<span class="kind mono">{post.label}</span>
+									{post.data.description && <p class="desc">{post.data.description}</p>}
+								</div>
+								<span class="row-meta mono">
+									<FormattedDate date={post.data.pubDate} />
+								</span>
+							</li>
+						))}
+					</ul>
+				)
+			}
+			<p class="empty" data-writing-empty hidden>Nothing in that half yet.</p>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<script>
+	// Filter the one stream down to a half. No framework, no routing: the rows
+	// are already on the page, the buttons just hide the ones you did not ask for.
+	(() => {
+		const bar = document.querySelector<HTMLElement>('[data-writing-filters]');
+		const list = document.querySelector<HTMLElement>('[data-writing-list]');
+		const empty = document.querySelector<HTMLElement>('[data-writing-empty]');
+		if (!bar || !list) return;
+		const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>('button[data-filter]'));
+		const rows = Array.from(list.querySelectorAll<HTMLLIElement>('li[data-kind]'));
+
+		bar.addEventListener('click', (event) => {
+			const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
+				'button[data-filter]',
+			);
+			if (!button) return;
+			const want = button.dataset.filter;
+			buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+			let shown = 0;
+			rows.forEach((row) => {
+				const on = want === 'all' || row.dataset.kind === want;
+				row.hidden = !on;
+				if (on) shown++;
+			});
+			if (empty) empty.hidden = shown > 0;
+		});
+	})();
+</script>
+
+<style>
+	main {
+		width: 1120px;
+		max-width: calc(100% - 2em);
+		margin: auto;
+		padding: 0 0 var(--space-l);
+	}
+
+	.titleblock {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: var(--space-s) var(--space-l);
+		border-bottom: 2px solid var(--fg);
+		padding: var(--space-m) 0 var(--space-xs);
+		align-items: end;
+	}
+	.titleblock h1 {
+		margin: var(--space-3xs) 0 0;
+		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-variation-settings: 'opsz' 72;
+	}
+	.tb {
+		display: grid;
+		grid-template-columns: auto auto auto;
+		gap: var(--space-3xs) var(--space-m);
+		text-align: right;
+		color: var(--muted);
+	}
+	.tb b {
+		color: var(--fg);
+		font-weight: 600;
+		display: block;
+	}
+	@media (max-width: 720px) {
+		.titleblock {
+			grid-template-columns: 1fr;
+		}
+		.tb {
+			text-align: left;
+		}
+	}
+
+	.lede {
+		max-width: var(--measure);
+		font-size: 1.1rem;
+		line-height: 1.6;
+		margin: var(--space-l) 0 0;
+	}
+
+	.filters {
+		display: flex;
+		gap: var(--space-3xs);
+		margin: var(--space-l) 0 var(--space-s);
+		border-bottom: 1px solid var(--rule);
+		padding-bottom: var(--space-2xs);
+	}
+	.filters button {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		letter-spacing: 0.04em;
+		text-transform: lowercase;
+		background: transparent;
+		color: var(--muted);
+		border: 1px solid var(--rule);
+		padding: 0.4em 0.7em;
+		cursor: pointer;
+	}
+	.filters button:hover,
+	.filters button:focus-visible {
+		color: var(--fg);
+		border-color: var(--fg);
+	}
+	.filters button[aria-pressed='true'] {
+		background: var(--lemon);
+		color: var(--lemon-fg);
+		border-color: var(--lemon);
+	}
+
+	.rows {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.rows > li {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: var(--space-s);
+		padding: var(--space-s) 0;
+		border-top: 1px solid var(--rule);
+		align-items: baseline;
+	}
+	.rows > li:last-child {
+		border-bottom: 1px solid var(--rule);
+	}
+	.t a {
+		font-family: var(--font-display);
+		font-weight: 700;
+		font-size: 1.2rem;
+		letter-spacing: -0.02em;
+		color: var(--fg);
+		text-decoration: none;
+	}
+	.t a:hover,
+	.t a:focus-visible {
+		box-shadow: inset 0 -3px 0 var(--lemon);
+	}
+	.kind {
+		color: var(--muted);
+		text-transform: uppercase;
+		margin-left: var(--space-2xs);
+	}
+	.desc {
+		margin: var(--space-3xs) 0 0;
+		color: var(--muted);
+		font-size: 0.98rem;
+		line-height: 1.55;
+		max-width: var(--measure);
+	}
+	.row-meta {
+		color: var(--muted);
+		white-space: nowrap;
+	}
+	.empty {
+		color: var(--muted);
+		padding: var(--space-l) 0;
+	}
+
+	@media (max-width: 560px) {
+		.rows > li {
+			grid-template-columns: 1fr;
+			gap: var(--space-3xs);
+		}
+	}
+</style>

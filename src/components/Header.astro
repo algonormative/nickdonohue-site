@@ -8,11 +8,13 @@ import ThemeToggle from './ThemeToggle.astro';
 	<nav>
 		<a class="brand" href="/">{SITE_TITLE}</a>
 		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/projects">Projects</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/molt">Molt</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+			<HeaderLink href="/">home</HeaderLink>
+			<HeaderLink href="/sound">sound</HeaderLink>
+			<HeaderLink href="/ink">ink</HeaderLink>
+			<HeaderLink href="/agents">agents</HeaderLink>
+			<HeaderLink href="/play">play</HeaderLink>
+			<HeaderLink href="/writing">writing</HeaderLink>
+			<HeaderLink href="/about">about</HeaderLink>
 		</div>
 		<div class="chrome">
 			<ThemeToggle />
@@ -30,52 +32,60 @@ import ThemeToggle from './ThemeToggle.astro';
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		max-width: var(--measure);
+		max-width: 1120px;
 		margin: 0 auto;
 		gap: var(--space-m);
+		flex-wrap: wrap;
 	}
 	.brand {
-		font-family: var(--font-mono);
-		font-size: 0.95rem;
-		font-weight: 700;
-		letter-spacing: -0.01em;
+		font-family: var(--font-display);
+		font-size: 1.15rem;
+		font-weight: 800;
+		letter-spacing: -0.02em;
 		color: var(--fg);
 		text-decoration: none;
 		padding: var(--space-s) 0;
 	}
 	.brand:hover {
-		color: var(--accent);
+		box-shadow: inset 0 -3px 0 var(--lemon);
 	}
 	.internal-links {
 		display: flex;
-		gap: var(--space-3xs);
+		gap: var(--space-2xs);
+		flex-wrap: wrap;
 	}
 	nav :global(.internal-links a) {
 		font-family: var(--font-mono);
-		font-size: 0.9rem;
-		padding: var(--space-s) var(--space-2xs);
+		font-size: 0.72rem;
+		letter-spacing: 0.04em;
+		text-transform: lowercase;
+		padding: var(--space-s) var(--space-3xs);
 		color: var(--muted);
-		border-bottom: 2px solid transparent;
 		text-decoration: none;
-		transition: color 80ms ease, border-color 80ms ease;
+		transition: color 80ms ease;
 	}
-	nav :global(.internal-links a:hover),
+	nav :global(.internal-links a:hover) {
+		color: var(--fg);
+	}
+	/* Lemon marks the page you are on. It is a fill, so it sits under the ink. */
 	nav :global(.internal-links a.active) {
 		color: var(--fg);
-		border-bottom-color: var(--accent);
+		box-shadow: inset 0 -3px 0 var(--lemon);
 	}
 	.chrome {
 		display: flex;
 		align-items: center;
 		gap: var(--space-2xs);
 	}
-	@media (max-width: 720px) {
+	@media (max-width: 760px) {
 		.internal-links {
 			gap: 0;
+			order: 3;
+			width: 100%;
+			padding-bottom: var(--space-2xs);
 		}
 		nav :global(.internal-links a) {
-			padding: var(--space-s) var(--space-3xs);
-			font-size: 0.85rem;
+			padding: var(--space-2xs) var(--space-3xs);
 		}
 	}
 </style>
