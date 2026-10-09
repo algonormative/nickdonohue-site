@@ -1,0 +1,783 @@
+---
+import type { ImageMetadata } from 'astro';
+import { getImage, Image } from 'astro:assets';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import tarot from '../data/breach-tarot.json';
+
+// The web masters are the print-queue renders (tabloid sheets) and the print
+// proof's fronts cut to the trim line (pocket deck). Astro sizes them per slot.
+const byName = (files: Record<string, { default: ImageMetadata }>) =>
+	Object.fromEntries(
+		Object.entries(files).map(([file, mod]) => [file.split('/').pop()!.replace('.webp', ''), mod.default]),
+	);
+const sheets = byName(import.meta.glob('../assets/breach/tarot/*.webp', { eager: true }));
+const cathedralSheets = byName(import.meta.glob('../assets/breach/cathedral/*.webp', { eager: true }));
+const pocket = byName(import.meta.glob('../assets/breach/pocket/*.webp', { eager: true }));
+
+const full = async (src: ImageMetadata) => (await getImage({ src, width: Math.min(1400, src.width), format: 'webp' })).src;
+
+const cards = await Promise.all(
+	tarot.cards.map(async (card) => ({
+		...card,
+		sheet: sheets[card.file],
+		small: pocket[card.pocket],
+		zoom: await full(sheets[card.file]),
+		smallZoom: await full(pocket[card.pocket]),
+	})),
+);
+
+const cathedral = [
+	{ key: 'cathedral-c001', label: 'c001', seed: 219, plot: 16 },
+	{ key: 'cathedral-c033', label: 'c033', seed: 613, plot: 32 },
+	{ key: 'cathedral-c004', label: 'c004', seed: 792, plot: 17 },
+	{ key: 'cathedral-c044', label: 'c044', seed: 430, plot: 18 },
+	{ key: 'cathedral-c019', label: 'c019', seed: 369, plot: 15 },
+];
+const cathedralZoom = Object.fromEntries(
+	await Promise.all(Object.entries(cathedralSheets).map(async ([k, src]) => [k, await full(src)])),
+);
+const backZoom = await full(pocket.back);
+
+const title = `Breach · ${SITE_TITLE}`;
+const description =
+	'Breach Cathedral and the Breach Tarot: pen-plotter drawings of slab architecture interrupted by a living helix, all twenty-two Major Arcana, and a pocket deck for print.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} image={sheets['xvii-star']} />
+	</head>
+	<body>
+		<Header />
+		<main class="breach">
+			<header class="titleblock">
+				<div>
+					<div class="eyebrow"><a href="/ink">plate 2 · Ink</a> · series</div>
+					<h1>Breach</h1>
+				</div>
+				<div class="tb mono">
+					<span><b>Sheets</b>{7 + cards.length}</span>
+					<span><b>Paper</b>11 × 17 in</span>
+					<span><b>Source</b><a href="https://github.com/algonormative/hatch3d" target="_blank" rel="noopener">hatch3d</a></span>
+				</div>
+			</header>
+
+			<p class="lede">
+				A series of pen-plotter drawings. A stack of slab architecture is interrupted by a living helix,
+				every tone is built from line density alone, and each sheet hides one short phrase. It started as a
+				single poster, Breach Cathedral, and grew into all twenty-two cards of the Major Arcana.
+			</p>
+
+			<nav class="jump mono" aria-label="On this page">
+				<a href="#cathedral">Breach Cathedral</a>
+				<a href="#tarot">Breach Tarot</a>
+				<a href="#pocket">Pocket deck</a>
+				<a href="#spreads">Spreads</a>
+			</nav>
+
+			<section id="cathedral" class="part">
+				<div class="section-head">
+					<h2>Breach Cathedral</h2>
+					<span class="mono">7 sheets</span>
+				</div>
+
+				<div class="split">
+					<figure class="sheet-fig">
+						<button class="zoomable" type="button" data-full={cathedralZoom['tower-211']} aria-label="Enlarge Tower, seed 211">
+							<Image
+								src={cathedralSheets['tower-211']}
+								widths={[480, 800, 1200]}
+								sizes="(max-width: 900px) 100vw, 560px"
+								alt="Breach Cathedral: Tower, seed 211. A full-height tower of cantilevered slabs with a twin helix wound through its shaft and a band where the stack shears and falls."
+							/>
+						</button>
+						<figcaption class="mono"><span><b>Tower</b> · seed 211</span><span>about 20 min</span></figcaption>
+					</figure>
+					<div class="text">
+						<p class="kicker">A system interrupted by a living one.</p>
+						<p>
+							A monumental stack of cantilevered slabs frames an empty shaft, and a ribbed helix membrane loops
+							through it, passing in front of and behind the stone. The Tower is the full-height version:
+							seventeen slab levels, two depth-occluded membranes and a band where the stack shears and falls.
+						</p>
+						<p>
+							The five sheets below are the original composition, picked by A/B ranking from a 48-setting sweep.
+							Each hides the phrase <em>this was made by a machine</em>, one word per slab, on its own fine
+							lettering layer.
+						</p>
+						<ul class="inks mono" aria-label="Pens">
+							<li><i style="background: var(--pen-carbon)"></i>carbon</li>
+							<li><i style="background: var(--pen-ultramarine)"></i>ultramarine</li>
+							<li><i style="background: var(--pen-vermilion)"></i>vermilion</li>
+							<li><i style="background: var(--pen-acid)"></i>acid</li>
+							<li><i style="background: var(--pen-violet)"></i>violet</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="row5">
+					{
+						cathedral.map((c) => (
+							<figure class="sheet-fig">
+								<button class="zoomable" type="button" data-full={cathedralZoom[c.key]} aria-label={`Enlarge Breach Cathedral ${c.label}`}>
+									<Image
+										src={cathedralSheets[c.key]}
+										widths={[240, 480]}
+										sizes="(max-width: 520px) 50vw, (max-width: 900px) 33vw, 210px"
+										alt={`Breach Cathedral ${c.label}, seed ${c.seed}`}
+										loading="lazy"
+									/>
+								</button>
+								<figcaption class="mono"><span><b>{c.label}</b> · s{c.seed}</span><span>{c.plot} min</span></figcaption>
+							</figure>
+						))
+					}
+				</div>
+
+				<div class="split flip">
+					<div class="text">
+						<div class="eyebrow">Breach Cathedral: Agent</div>
+						<h3>Plenipotentiary</h3>
+						<p>
+							Some otherworldly force showing itself as an agent of the system. A plenipotentiary is an envoy
+							sent with full powers to act for a sovereign.
+						</p>
+						<p>
+							A seated figure in a pinstripe suit, cut into six planes per limb, sits on a slab throne inside the
+							cathedral walls with its legs crossed. Its head is the helix, and the head is the light: the chest
+							blows out to paper while the base stays heavy. A beam leaves its face, and a flat cross-hatched
+							censor bar covers its eyes, the one mark that ignores the camera.
+						</p>
+						<dl class="facts mono">
+							<dt>Phrase</dt><dd>this was made by a machine</dd>
+							<dt>Seed</dt><dd>3</dd>
+							<dt>Plot</dt><dd>about 27 min</dd>
+						</dl>
+					</div>
+					<figure class="sheet-fig">
+						<button class="zoomable" type="button" data-full={cathedralZoom['agent-3']} aria-label="Enlarge Plenipotentiary">
+							<Image
+								src={cathedralSheets['agent-3']}
+								widths={[480, 800, 1200]}
+								sizes="(max-width: 900px) 100vw, 560px"
+								alt="Plenipotentiary: a seated pinstripe-suited figure with a helix head and a hatched censor bar over its eyes, on a slab throne inside the cathedral."
+								loading="lazy"
+							/>
+						</button>
+						<figcaption class="mono"><span><b>Plenipotentiary</b> · seed 3</span><span>about 27 min</span></figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<section id="tarot" class="part">
+				<div class="section-head">
+					<h2>Breach Tarot</h2>
+					<span class="mono">22 sheets</span>
+				</div>
+
+				<p class="lede">
+					Each card is a fresh reading of its arcanum, built from the cathedral's parts. The story is the Fool's
+					journey towards enlightenment through an uncertain world, told through AI-driven commerce and the
+					dynamics of power and disruption. Any three cards laid side by side make one landscape.
+				</p>
+
+				<div class="rules">
+					<div>
+						<b class="mono">Shared horizon</b>
+						Every horizon sits at the same height, 60% down the art: the Fool's eye line. He appears only on the
+						first card and the last, and every card between is what he sees. The World alone is seen from above.
+					</div>
+					<div>
+						<b class="mono">One value key</b>
+						Each card owns a tone: the Star darkest, the Sun lightest, the Devil one dark monolith on paper, the
+						Moon a ruled night where only sunlit faces shine.
+					</div>
+					<div>
+						<b class="mono">The helix</b>
+						In every card, as the protagonist: a different relationship to the system each time.
+					</div>
+					<div>
+						<b class="mono">A flat mark, sparingly</b>
+						A single 2D element that ignores the camera, used only where it works: a lemniscate, a tesseract's
+						shadow, a censor bar, a target ring, a disc, a bolt.
+					</div>
+				</div>
+
+				<ol class="deck" aria-label="The deck">
+					{
+						cards.map((card) => (
+							<li>
+								<a href={`#${card.slug}`}>
+									<Image src={card.sheet} widths={[160, 320]} sizes="(max-width: 520px) 25vw, (max-width: 900px) 16vw, 96px" alt="" loading="lazy" />
+									<small class="mono">{card.numeral} {card.name}</small>
+								</a>
+							</li>
+						))
+					}
+				</ol>
+
+				{
+					cards.map((card) => (
+						<article class="card" id={card.slug} style={`--acc: var(--pen-${card.ink})`}>
+							<figure class="sheet-fig">
+								<button class="zoomable" type="button" data-full={card.zoom} aria-label={`Enlarge ${card.name}`}>
+									<Image src={card.sheet} widths={[480, 800, 1200]} sizes="(max-width: 900px) 100vw, 480px" alt={card.alt} loading="lazy" />
+								</button>
+							</figure>
+							<div class="text">
+								<div class="numeral">{card.numeral}</div>
+								<h3>{card.name}</h3>
+								{card.reading.map((p) => <p>{p}</p>)}
+								<p class="phrase">{card.phrase}</p>
+								<dl class="facts mono">
+									<dt>Flat mark</dt><dd>{card.mark}</dd>
+									<dt>Seed</dt><dd>{card.seed}</dd>
+									<dt>Plot</dt><dd>{card.plot}</dd>
+								</dl>
+							</div>
+						</article>
+					))
+				}
+			</section>
+
+			<section id="pocket" class="part">
+				<div class="section-head">
+					<h2>Pocket deck</h2>
+					<span class="mono">70 × 120 mm</span>
+				</div>
+
+				<div class="split">
+					<div class="text">
+						<p>
+							The same twenty-two scenes at a standard tarot size. Nothing is shrunk: every card is redrawn at the
+							new size from the same seed, so the scene holds while the detail thins out, line spacing stays wide
+							enough for a pen, and the phrase moves out of the art into a band under the name.
+						</p>
+						<p>
+							These are the print files for a commercial card printer: 300 ppi with bleed, lines thickened so
+							they survive the press, on a printed paper tint. Each also exists as a plotter file.
+						</p>
+						<p>
+							The back is one drawing, the same either way up: a labyrinth medallion with the helix walking in
+							and out of it, winding round each slab at the head and foot, and the Star's star at its heart.
+						</p>
+					</div>
+					<figure class="sheet-fig back">
+						<button class="zoomable" type="button" data-full={backZoom} aria-label="Enlarge the card back">
+							<Image
+								src={pocket.back}
+								widths={[320, 640]}
+								sizes="(max-width: 900px) 70vw, 320px"
+								alt="The card back: a round labyrinth with a star at its centre, a red, green and gold helix winding in and out of it and around three slabs above and three below, symmetric top to bottom."
+								loading="lazy"
+							/>
+						</button>
+						<figcaption class="mono"><span><b>Back</b></span><span>70 × 120 mm</span></figcaption>
+					</figure>
+				</div>
+
+				<ol class="pocket-grid" aria-label="Pocket deck fronts">
+					{
+						cards.map((card) => (
+							<li>
+								<button class="zoomable" type="button" data-full={card.smallZoom} aria-label={`Enlarge pocket ${card.name}`}>
+									<Image
+										src={card.small}
+										widths={[200, 400]}
+										sizes="(max-width: 900px) 25vw, 100px"
+										alt={`${card.numeral} ${card.name}, pocket size, with the phrase “${card.phrase}” under the name`}
+										loading="lazy"
+									/>
+								</button>
+							</li>
+						))
+					}
+				</ol>
+			</section>
+
+			<section id="spreads" class="part">
+				<div class="section-head">
+					<h2>Three-card spreads</h2>
+					<span class="mono">{tarot.spreads.length} readings</span>
+				</div>
+				<ul class="spreads">
+					{
+						tarot.spreads.map((s) => (
+							<li>
+								<span class="mono">{s.cards}</span>
+								<span>{s.reading}</span>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+
+			<p class="colophon mono">
+				Every mark is a plotted line, drawn for an AxiDraw with five inks and a fine lettering pen.
+				Each sketch is TypeScript in hatch3d, written with Claude to Nick's briefs and picks, and the card
+				readings were drafted by Claude from the working notes. The images are renders; the sheets are prepped
+				for the plotter but not yet drawn.
+			</p>
+		</main>
+
+		<dialog class="zoom" aria-label="Enlarged image">
+			<form method="dialog"><button class="close mono" type="submit">close</button></form>
+			<img alt="" />
+		</dialog>
+
+		<Footer />
+
+		<script>
+			const dialog = document.querySelector<HTMLDialogElement>('dialog.zoom');
+			const big = dialog?.querySelector('img');
+			if (dialog && big) {
+				document.querySelectorAll<HTMLButtonElement>('button.zoomable').forEach((button) => {
+					button.addEventListener('click', () => {
+						const img = button.querySelector('img');
+						big.src = button.dataset.full ?? img?.currentSrc ?? '';
+						big.alt = img?.alt ?? '';
+						dialog.showModal();
+					});
+				});
+				// A click anywhere closes it, the image included: it is a viewer, not a form.
+				dialog.addEventListener('click', () => dialog.close());
+			}
+		</script>
+	</body>
+</html>
+
+<style>
+	/* The five plotter inks, as the pens lay them down on warm stock; brighter on blueprint. */
+	.breach {
+		--pen-carbon: #22282c;
+		--pen-ultramarine: #3c49aa;
+		--pen-vermilion: #d04b3c;
+		--pen-acid: #8c9020;
+		--pen-violet: #776090;
+		--paper: #f4f0e6;
+	}
+	:global([data-theme='dark']) .breach {
+		--pen-carbon: #c9ccd4;
+		--pen-ultramarine: #8f9bf0;
+		--pen-vermilion: #f0806f;
+		--pen-acid: #c9cd5f;
+		--pen-violet: #b49ed0;
+	}
+	@media (prefers-color-scheme: dark) {
+		:global(:root:not([data-theme])) .breach {
+			--pen-carbon: #c9ccd4;
+			--pen-ultramarine: #8f9bf0;
+			--pen-vermilion: #f0806f;
+			--pen-acid: #c9cd5f;
+			--pen-violet: #b49ed0;
+		}
+	}
+
+	main {
+		width: 1120px;
+		max-width: calc(100% - 2em);
+		margin: auto;
+		padding: 0 0 var(--space-l);
+	}
+
+	.titleblock {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: var(--space-s) var(--space-l);
+		border-bottom: 2px solid var(--fg);
+		padding: var(--space-m) 0 var(--space-xs);
+		align-items: end;
+	}
+	.titleblock h1 {
+		margin: var(--space-3xs) 0 0;
+		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-variation-settings: 'opsz' 72;
+	}
+	.titleblock .eyebrow a {
+		color: inherit;
+	}
+	.tb {
+		display: grid;
+		grid-template-columns: auto auto auto;
+		gap: var(--space-3xs) var(--space-m);
+		text-align: right;
+		color: var(--muted);
+	}
+	.tb b {
+		color: var(--fg);
+		font-weight: 600;
+		display: block;
+	}
+
+	.lede {
+		max-width: var(--measure);
+		font-size: 1.1rem;
+		line-height: 1.6;
+		margin: var(--space-l) 0 0;
+	}
+
+	.jump {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2xs) var(--space-m);
+		margin-top: var(--space-m);
+		padding-top: var(--space-xs);
+		border-top: 1px solid var(--rule);
+	}
+
+	.part {
+		margin-top: var(--space-2xl);
+		display: grid;
+		gap: var(--space-l);
+	}
+	.part > .lede {
+		margin: 0;
+	}
+	.section-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: var(--space-s);
+		border-bottom: 2px solid var(--fg);
+		padding-bottom: var(--space-3xs);
+	}
+	.section-head h2 {
+		margin: 0;
+		font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+	}
+	.section-head .mono {
+		color: var(--muted);
+	}
+
+	h3 {
+		margin: 0;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+		text-wrap: balance;
+	}
+
+	/* A sheet is a print on the wall: its own warm stock, one soft shadow, no frame. */
+	.sheet-fig {
+		margin: 0;
+		display: grid;
+		gap: var(--space-2xs);
+		min-width: 0;
+	}
+	.zoomable {
+		display: block;
+		width: 100%;
+		padding: 0;
+		border: 0;
+		background: var(--paper);
+		cursor: zoom-in;
+		box-shadow:
+			0 1px 0 rgba(0, 0, 0, 0.08),
+			0 14px 30px -18px rgba(0, 0, 0, 0.5);
+		transition: transform 0.2s ease;
+	}
+	.zoomable:hover {
+		transform: translateY(-3px);
+	}
+	.zoomable:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+	}
+	.zoomable :global(img) {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+	figcaption {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--space-xs);
+		flex-wrap: wrap;
+		color: var(--muted);
+	}
+	figcaption b {
+		color: var(--fg);
+		font-weight: 600;
+	}
+
+	.split {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		gap: clamp(1.5rem, 4vw, 3.5rem);
+		align-items: start;
+	}
+	.split.flip {
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		margin-top: var(--space-l);
+	}
+	.text {
+		display: grid;
+		gap: var(--space-s);
+		min-width: 0;
+		max-width: var(--measure);
+	}
+	.text p {
+		margin: 0;
+		line-height: 1.6;
+	}
+	.kicker {
+		font-family: var(--font-display);
+		font-size: var(--step-2);
+		font-weight: 700;
+		line-height: 1.15;
+		text-wrap: balance;
+	}
+
+	.inks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2xs) var(--space-s);
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		color: var(--muted);
+	}
+	.inks li {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+	}
+	.inks i {
+		width: 16px;
+		height: 3px;
+		display: inline-block;
+	}
+
+	.row5 {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: clamp(0.75rem, 2vw, 1.5rem);
+	}
+
+	.rules {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		border-top: 1px solid var(--rule);
+	}
+	.rules div {
+		padding: var(--space-xs) var(--space-s) var(--space-xs) 0;
+		border-bottom: 1px solid var(--rule);
+		line-height: 1.5;
+		min-width: 0;
+	}
+	.rules b {
+		display: block;
+		text-transform: uppercase;
+		color: var(--muted);
+		margin-bottom: var(--space-3xs);
+	}
+
+	.deck {
+		display: grid;
+		grid-template-columns: repeat(11, minmax(0, 1fr));
+		gap: clamp(0.4rem, 1vw, 0.8rem);
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.deck a {
+		display: grid;
+		gap: 0.3rem;
+		text-decoration: none;
+		color: var(--fg);
+	}
+	.deck :global(img) {
+		display: block;
+		width: 100%;
+		height: auto;
+		background: var(--paper);
+		box-shadow: 0 8px 18px -12px rgba(0, 0, 0, 0.55);
+		transition: transform 0.2s ease;
+	}
+	.deck a:hover :global(img) {
+		transform: translateY(-3px);
+	}
+	.deck small {
+		font-size: 0.6rem;
+		line-height: 1.25;
+		text-align: center;
+		overflow-wrap: anywhere;
+	}
+
+	.card {
+		display: grid;
+		grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+		gap: clamp(1.5rem, 4vw, 3.5rem);
+		align-items: start;
+		padding-top: var(--space-l);
+		border-top: 1px solid var(--rule);
+		scroll-margin-top: var(--space-m);
+	}
+	.card:nth-of-type(even) .sheet-fig {
+		order: 2;
+	}
+	.numeral {
+		font-family: var(--font-display);
+		font-size: var(--step-2);
+		letter-spacing: 0.12em;
+		color: var(--muted);
+	}
+	.phrase {
+		font-style: italic;
+		font-size: var(--step-1);
+		border-left: 3px solid var(--acc, var(--pen-vermilion));
+		padding-left: var(--space-xs);
+	}
+	.facts {
+		display: grid;
+		grid-template-columns: max-content minmax(0, 1fr);
+		gap: 0.3rem var(--space-s);
+		border-top: 1px solid var(--rule);
+		padding-top: var(--space-xs);
+		margin: 0;
+		line-height: 1.5;
+	}
+	.facts dt {
+		color: var(--muted);
+	}
+	.facts dd {
+		margin: 0;
+	}
+
+	.back {
+		max-width: 320px;
+		justify-self: center;
+		width: 100%;
+	}
+	.back .zoomable,
+	.pocket-grid .zoomable {
+		border-radius: 3.5% / 2%;
+		overflow: hidden;
+	}
+	.pocket-grid {
+		display: grid;
+		grid-template-columns: repeat(11, minmax(0, 1fr));
+		gap: clamp(0.4rem, 1vw, 0.8rem);
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.spreads {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		border-top: 1px solid var(--rule);
+	}
+	.spreads li {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+		gap: var(--space-s);
+		padding: var(--space-xs) 0;
+		border-bottom: 1px solid var(--rule);
+		line-height: 1.5;
+	}
+	.spreads .mono {
+		font-weight: 600;
+		padding-top: 0.2em;
+	}
+
+	.colophon {
+		margin: var(--space-2xl) 0 0;
+		max-width: 72ch;
+		color: var(--muted);
+		line-height: 1.7;
+		border-left: 3px solid var(--lemon);
+		padding-left: var(--space-xs);
+	}
+
+	.zoom {
+		border: 0;
+		padding: 0;
+		background: transparent;
+		max-width: 100vw;
+		max-height: 100vh;
+		width: 100vw;
+		height: 100vh;
+		cursor: zoom-out;
+	}
+	.zoom::backdrop {
+		background: rgba(10, 12, 18, 0.9);
+	}
+	.zoom[open] {
+		display: grid;
+		place-items: center;
+	}
+	.zoom img {
+		max-width: calc(100vw - 2rem);
+		max-height: calc(100vh - 4rem);
+		width: auto;
+		height: auto;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+	}
+	.zoom form {
+		position: fixed;
+		top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
+		right: 1rem;
+	}
+	.close {
+		background: var(--bg);
+		color: var(--fg);
+		border: 1px solid var(--rule);
+		padding: 0.3em 0.7em;
+		cursor: pointer;
+	}
+
+	@media (max-width: 900px) {
+		.split,
+		.split.flip,
+		.card {
+			grid-template-columns: 1fr;
+		}
+		.split.flip .sheet-fig,
+		.card:nth-of-type(even) .sheet-fig {
+			order: -1;
+		}
+		.row5 {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+		.deck {
+			grid-template-columns: repeat(6, minmax(0, 1fr));
+		}
+		.pocket-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 720px) {
+		.titleblock {
+			grid-template-columns: 1fr;
+		}
+		.tb {
+			text-align: left;
+		}
+	}
+	@media (max-width: 520px) {
+		.row5 {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		.deck {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+		.spreads li {
+			grid-template-columns: 1fr;
+			gap: 0.2rem;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.zoomable,
+		.deck :global(img) {
+			transition: none;
+		}
+		.zoomable:hover,
+		.deck a:hover :global(img) {
+			transform: none;
+		}
+	}
+</style>

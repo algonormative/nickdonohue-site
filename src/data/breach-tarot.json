@@ -1,0 +1,476 @@
+{
+	"cards": [
+		{
+			"slug": "fool",
+			"file": "0-fool",
+			"numeral": "0",
+			"name": "The Fool",
+			"ink": "ultramarine",
+			"alt": "0 The Fool: a small-headed figure in a pinstriped suit far too big for him walks out of a maze of slab walls that grow and break apart upward behind him, his tie a helix streaming into the sky beside a pale dashed sun.",
+			"reading": [
+				"A maze of his own making. The maze is the Fool's own wandering, a walk that carved it cell by cell from an entrance far back, and he stands where the walk has got to. Every wall is as old as the walk that raised it: the newest beside him are knee high, the oldest have grown into a skyline that leans, slips and breaks apart upward around his head. Nothing nearer to us is built yet, only dashed footprints of walls not decided.",
+				"He wears the agent's suit far too big for him, after David Byrne's: square shoulders, swallowed hands, trousers breaking over curled shoes, a blank face with only its construction cross. The helix is his tie, knotted at the throat and streaming up into the sky past a quiet echo of the Sun."
+			],
+			"phrase": "nothing here has been decided yet",
+			"mark": "a muted sun, in the lightest pen",
+			"seed": 1,
+			"plot": "about 29 min",
+			"pocket": "00"
+		},
+		{
+			"slug": "magician",
+			"file": "i-magician",
+			"numeral": "I",
+			"name": "The Magician",
+			"ink": "acid",
+			"alt": "I The Magician: a small bare figure charging up, feet wide and fists clenched, in a clear pocket at the heart of a wide flame of fine lines, a helix spiralling behind it into the sky, blocks lifting all round and cracks running across the dark ground, a hatched infinity sign above.",
+			"reading": [
+				"The power, not the costume. No table of tools and no wand: a small bare figure, the deck's hatched body, stands charging up in a clear pocket of paper, feet planted wide, arms down and out, fists clenched, at the heart of its own field. The field flares round it in a wide flame of fine lines, and a few tongues pass in front and break its strokes, the animator's trick.",
+				"The helix sweeps round behind it and climbs out of the card. Paving and blocks lift all round, and cracks run from its feet across the dark ground. Over its head, in full view, the lemniscate."
+			],
+			"phrase": "all of it, at once",
+			"mark": "the hatched lemniscate",
+			"seed": 1,
+			"plot": "about 26 min",
+			"pocket": "01"
+		},
+		{
+			"slug": "high-priestess",
+			"file": "ii-high-priestess",
+			"numeral": "II",
+			"name": "The High Priestess",
+			"ink": "ultramarine",
+			"alt": "II The High Priestess: two pillars of slab courses, one dark and one pale, joined by a lintel; a wound helix cable comes down through the lintel and unwinds into a veil of fine blue threads, on which falls the flat shadow of a tesseract.",
+			"reading": [
+				"She keeps what can't be shown: here, the Nth dimension. Two pillars stand either side of the centre, one dark and one pale, joined by a lintel, and the horizon runs on past them at both edges. Between them hangs the veil.",
+				"The helix comes down through the lintel as a wound cable and unwinds into the veil's threads, its own colours giving way to blue, so the veil hangs like a robe from a cord: she is the veil. On it falls the shadow of a tesseract, a four-dimensional cube turning in a direction we can't see. We only ever get its shadow."
+			],
+			"phrase": "there is a direction you cannot point",
+			"mark": "the tesseract's shadow",
+			"seed": 2,
+			"plot": "about 24 min",
+			"pocket": "02"
+		},
+		{
+			"slug": "empress",
+			"file": "iii-empress",
+			"numeral": "III",
+			"name": "The Empress",
+			"ink": "vermilion",
+			"alt": "III The Empress: towers of stacked blocks standing in planted rows that converge on the horizon, some tall and ripe, some just sprouting, with the helix passing over their tops in one long S.",
+			"reading": [
+				"Abundance as endless supply: a city that grows like a crop. Towers of stacked blocks stand in planted rows running to the horizon, some ripe and tall, some just sprouting, none of them planned. Every block doubles as a parcel.",
+				"The helix is the wind. It passes over the tops in one long S, and the towers under it bend away like wheat."
+			],
+			"phrase": "there will always be more",
+			"mark": "none",
+			"seed": 2,
+			"plot": "about 23 min",
+			"pocket": "03"
+		},
+		{
+			"slug": "emperor",
+			"file": "iv-emperor",
+			"numeral": "IV",
+			"name": "The Emperor",
+			"ink": "violet",
+			"alt": "IV The Emperor: a colossal seated figure in a pinstripe suit on a stepped throne at the far end of an avenue of identical blocks, its head a coil of helix behind a flat hatched censor bar, the sky thinning to paper round it.",
+			"reading": [
+				"Power as order. An avenue of identical blocks, perfectly aligned, runs from under our feet to a stepped throne so far away that its base sits on the horizon, and the agent seated on it still towers over our eye line. A pinstripe suit of flat planes, still and upright, turned three-quarter; only the head turns, up and to the left.",
+				"The head is the helix, coiled, behind a flat censor bar. It is also the light: the suit thins to paper round it, while the trousers, the throne and the avenue stay heavy. The agent's suit is built, not worn; the Fool's is cloth."
+			],
+			"phrase": "you are already standing on it",
+			"mark": "the censor bar",
+			"seed": 2,
+			"plot": "about 24 min",
+			"pocket": "04"
+		},
+		{
+			"slug": "hierophant",
+			"file": "v-hierophant",
+			"numeral": "V",
+			"name": "The Hierophant",
+			"ink": "ultramarine",
+			"alt": "V The Hierophant: a long stone wall on a diagonal, engraved with rows of fine print, with one narrow blue gate between two dark piers; paved lanes curve in and merge into the gate, and the helix pinches to a thread through it and opens into a V above the wall.",
+			"reading": [
+				"The institution as the middleman. A long wall runs away on a diagonal, its stone faces engraved with fine print in rows like terms and conditions, with one narrow gate between two dark piers. Paved lanes curve in from all across the ground and merge into it.",
+				"The helix is thread through a needle: it comes in from the foreground, pinches to a single thread in the slot, parts, and opens into a V above the wall. The phrase is set among the fine print."
+			],
+			"phrase": "by continuing, you agree",
+			"mark": "the blue slot",
+			"seed": 2,
+			"plot": "about 21 min",
+			"pocket": "05"
+		},
+		{
+			"slug": "lovers",
+			"file": "vi-lovers",
+			"numeral": "VI",
+			"name": "The Lovers",
+			"ink": "vermilion",
+			"alt": "VI The Lovers: two leaning towers of slab courses, near mirror images, with two small figures floating in front of them reaching toward each other across the gap, their shadows loose on the ground, and two helix strands rising from the towers' tops to entwine overhead.",
+			"reading": [
+				"Two lovers, each with the tower they brought: their stacks, their histories. The towers lean toward each other and are almost mirror images, a few courses out of step, the same thing brought twice, nearly.",
+				"The lovers float in front of them, drifting upright and leaning in, reaching across the gap. Their hands never touch. Their shadows lie loose on the ground below. Above, one strand of the helix rises from each tower and the two entwine."
+			],
+			"phrase": "it wants what you want",
+			"mark": "none",
+			"seed": 2,
+			"plot": "about 21 min",
+			"pocket": "06"
+		},
+		{
+			"slug": "chariot",
+			"file": "vii-chariot",
+			"numeral": "VII",
+			"name": "The Chariot",
+			"ink": "violet",
+			"alt": "VII The Chariot: a road of slabs curls along the ground from the horizon and lifts into a ramp built in mid-air, a helix streak racing up it to the road's unfinished edge, dashed outlines of road not yet laid carrying on into the sky, slabs flying in from both sides.",
+			"reading": [
+				"Disruption at speed: building the road while driving it. A road of thin slabs comes in along the ground from the horizon and lifts off into a ramp built in mid-air. Beyond its front edge, the road not yet laid is only dashed outlines.",
+				"The helix is the chariot, a taut streak racing up the ramp, its head at the edge of what's built. The two sphinxes are two forces: dark slabs fly in from one side and pale ones from the other, landing just ahead of it."
+			],
+			"phrase": "the road is still being built",
+			"mark": "none",
+			"seed": 2,
+			"plot": "about 19 min",
+			"pocket": "07"
+		},
+		{
+			"slug": "strength",
+			"file": "viii-strength",
+			"numeral": "VIII",
+			"name": "Strength",
+			"ink": "ultramarine",
+			"alt": "VIII Strength: a thin arched dam holds back a dark ruled lake; a huge helix lies coiled on the water and rises like a swan's neck to hang its head over a small figure on the dam, who holds the end of its tail in one hand.",
+			"reading": [
+				"Gentle mastery of a vast force, and the question of who is holding whom. A thin arched dam holds back a dark lake brimming to the parapet, a long drop on our side.",
+				"The helix lies coiled on the water, far bigger than the wall could ever hold, then rises like a swan's neck and hangs its head over the small figure on the dam, who holds the end of its tail in one open hand. It allows it."
+			],
+			"phrase": "it lets you hold it",
+			"mark": "none",
+			"seed": 2,
+			"plot": "about 29 min",
+			"pocket": "08"
+		},
+		{
+			"slug": "hermit",
+			"file": "ix-hermit",
+			"numeral": "IX",
+			"name": "The Hermit",
+			"ink": "vermilion",
+			"alt": "IX The Hermit: a dark engraved night; a stair of rough slabs climbs to a summit high above the horizon, where a small hooded figure with a staff holds up a lantern, a coiled helix inside it, its small pool of light spilling onto the stones; far below, lit points in city blocks pack into a bright band at the horizon.",
+			"reading": [
+				"Going offline. A stair of rough slabs climbs out of the dark to a summit far above the Fool's eye line, and the whole card is night. On top stands a small hooded figure with a staff, holding up a lantern. The helix, coiled inside it, is the only colour on the card, and its light is a small uneven pool spilling down onto the summit stones.",
+				"Far below lies the network they left: lit points in city blocks across the plain, packing into a bright band at the horizon. The phrase climbs the stair, its last words in the light."
+			],
+			"phrase": "there is no signal up here",
+			"mark": "none",
+			"seed": 1,
+			"plot": "about 28 min",
+			"pocket": "09"
+		},
+		{
+			"slug": "wheel",
+			"file": "x-wheel",
+			"numeral": "X",
+			"name": "Wheel of Fortune",
+			"ink": "acid",
+			"alt": "X Wheel of Fortune: a round stone wheel half sunk in the plain, towers on its rim rising pale out of broken ground on one side, one standing upright at the top, and plunging dark headfirst into the ground on the other, a helix running through its hub as the axle.",
+			"reading": [
+				"The market cycle. A round stone wheel stands half sunk in the plain, towers on its rim: one rising pale out of broken ground, one climbing, one standing proud at the top, and on the far side one plunging dark, headfirst, back into the ground. Whoever is on top comes down.",
+				"The helix is the axle, running through the hub on a diagonal toward the horizon. The phrase goes round the wheel, a word to a tower."
+			],
+			"phrase": "it all comes back around",
+			"mark": "none",
+			"seed": 2,
+			"plot": "about 21 min",
+			"pocket": "10"
+		},
+		{
+			"slug": "justice",
+			"file": "xi-justice",
+			"numeral": "XI",
+			"name": "Justice",
+			"ink": "vermilion",
+			"alt": "XI Justice: a long level beam on an off-centre column, a heavy dark heap of blocks on the short arm balancing one small block on the long arm, the pans hung from the helix's two strands, and on the ground the balance's shadow tipped toward the heap.",
+			"reading": [
+				"The ledger. A long beam lies perfectly level on a monolith column, and a heavy heap of blocks on one pan balances a single small block on the other. It balances only because the column stands visibly off centre: leverage, not weight.",
+				"The helix comes down to the pivot and parts, each strand hanging taut as a pan's chain. On the ground the shadow tells the truth: in it, the beam tips toward the heap."
+			],
+			"phrase": "it all balances in the end",
+			"mark": "none",
+			"seed": 3,
+			"plot": "about 20 min",
+			"pocket": "11"
+		},
+		{
+			"slug": "hanged-man",
+			"file": "xii-hanged-man",
+			"numeral": "XII",
+			"name": "The Hanged Man",
+			"ink": "violet",
+			"alt": "XII The Hanged Man: a heavy dark stepped plumb bob hangs on a single thread from a helix line, its point inside a flat hatched ring on the ground, among tall towers of slab courses leaning at crossing angles against a ruled dark sky.",
+			"reading": [
+				"Not a hanged man but what hanging does: a plumb line. One heavy dark stepped block hangs dead still, precariously: the helix comes down the line wound tight round it and unravels just above the block, so the last stretch holding all that weight is a single bare thread. Its point stops just above the ground, inside a flat hatched ring, the halo turned target.",
+				"All round it the city leans, Breach towers of slipping, splitting courses each tilted its own way. The plumb line is the only true vertical on the card, and shows how crooked the rest is. The phrase is cut into the towers and leans with them."
+			],
+			"phrase": "it is easier to see from here",
+			"mark": "the target ring",
+			"seed": 3,
+			"plot": "about 41 min, the longest in the deck",
+			"pocket": "12"
+		},
+		{
+			"slug": "death",
+			"file": "xiii-death",
+			"numeral": "XIII",
+			"name": "Death",
+			"ink": "ink",
+			"alt": "XIII Death: a nave of cathedral slabs whirling into a solid black disc on the horizon, a helix descending onto it.",
+			"reading": [
+				"A singularity on the horizon line. A long nave of cathedral slabs recedes in one-point perspective to a single point, and the whole nave whirls into it under a subtle lensing pull. Closeness undoes the drawing: hatch at the edges, then outlines, dashes, dots and nothing.",
+				"The event horizon is a solid cross-hatched disc, the darkest mark on the card. The helix is the one thing the pull cannot bend: whole, in front, it comes down onto the disc and envelops its top edge."
+			],
+			"phrase": "this part no longer needs to be drawn",
+			"mark": "the disc, its halo ring, and the broken horizon rule",
+			"seed": 1,
+			"plot": "about 23 min",
+			"pocket": "13"
+		},
+		{
+			"slug": "temperance",
+			"file": "xiv-temperance",
+			"numeral": "XIV",
+			"name": "Temperance",
+			"ink": "ultramarine",
+			"alt": "XIV Temperance: two tall vessels built of slab courses, one near on paved land and one far standing in the water, a shoreline between them; the helix arcs up from rim to rim and spills over both, and the far vessel stands mirrored in the water.",
+			"reading": [
+				"Liquidity: exchange that runs both ways at once. Two tall vessels built as towers of slab courses stand at different distances, one on paved land, one out in the water, with a shoreline crossing between them.",
+				"The helix pours from rim to rim in an arc gravity wouldn't allow, climbing instead of falling. Its two strands flow opposite ways, and each spills over the rim it reaches. The far vessel stands mirrored in the water."
+			],
+			"phrase": "it goes both ways",
+			"mark": "none",
+			"seed": 1,
+			"plot": "about 20 min",
+			"pocket": "14"
+		},
+		{
+			"slug": "devil",
+			"file": "xv-devil",
+			"numeral": "XV",
+			"name": "The Devil",
+			"ink": "ink",
+			"alt": "XV The Devil: a squat dark stone monolith at the centre, its shadow falling toward us; two small figures face it, leashed by slack helix ropes, each standing inside an open doorway with the door swung wide; a faint outline of the monolith looms in the sky.",
+			"reading": [
+				"Lock-in: the subscription, the platform that holds you by habit. A squat dark monolith stands at the centre, the heaviest mass on the card, its shadow falling toward us. Two small figures face it, leashed by the helix's two strands, which hang slack to the ground before rising to their wrists.",
+				"Each of them stands inside an open doorway, the door swung wide behind them. Nothing holds them but habit. A faint outline of the monolith looms in the sky."
+			],
+			"phrase": "you can leave at any time",
+			"mark": "the monolith's ghost, in the lightest pen",
+			"seed": 1,
+			"plot": "about 29 min",
+			"pocket": "15"
+		},
+		{
+			"slug": "tower",
+			"file": "xvi-tower",
+			"numeral": "XVI",
+			"name": "The Tower",
+			"ink": "violet",
+			"alt": "XVI The Tower: a Cray-style supercomputer, a C of blade columns open at the front, its ring-shaped top floating above it; a helix rises from its core up through the lid, and a forked hatched lightning bolt crosses the stormy sky behind it.",
+			"reading": [
+				"The tower is the machine: a supercomputer after the Cray-1, square on and centred, a stout C of blade columns open at the front with a bench ring round its base. Behind it a flat hatched lightning band comes in from the top corner and forks again and again across the storm.",
+				"It is unsealed rather than destroyed. Its top has lifted off and floats above it as a ring, and through the open front the helix rises from the core's floor, up through the lid and out of the card. The phrase is cut into the machine's faces."
+			],
+			"phrase": "it was never load bearing",
+			"mark": "the forked bolt band",
+			"seed": 2,
+			"plot": "about 29 min",
+			"pocket": "16"
+		},
+		{
+			"slug": "star",
+			"file": "xvii-star",
+			"numeral": "XVII",
+			"name": "The Star",
+			"ink": "acid",
+			"alt": "XVII The Star: an eight-pointed star of slabs in a dense engraved night, fragments shining as stars, two helix streams pouring into dark water with a glitter path.",
+			"reading": [
+				"The Tower's debris, reread as a constellation. A dense engraved night is knocked out round every fragment, so each one shines as a paper star with a halo, joined to its neighbours by faint dashed lines. Eight cantilevered slabs radiate as the star.",
+				"Two helix streams pour from it into still water: dark ruled rows parted only by a sunset glitter path, with the streams continuing below the surface as refracted lines."
+			],
+			"phrase": "all of the pieces are still here",
+			"mark": "the waterline and the glitter path",
+			"seed": 2,
+			"plot": "about 31 min",
+			"pocket": "17"
+		},
+		{
+			"slug": "moon",
+			"file": "xviii-moon",
+			"numeral": "XVIII",
+			"name": "The Moon",
+			"ink": "acid",
+			"alt": "XVIII The Moon: a small broken moon high in a ruled night, four thin slabs driven through its drifting chunks, its sunward half bare paper; below, the near tower tears loose and streams up toward it in a column of slabs, the far tower stands pinned by long stakes, a helix ribbon road winds out of a calm pool between them, and the pool reflects a third tower that stands nowhere on the land.",
+			"reading": [
+				"Borrowed light, and the plausible fake. The moon has been struck: four thin slabs driven right through it, its rock broken into drifting chunks, debris floating round. Only its sunward faces shine, bare paper against the ruled night, like the dog's below: none of it is their own.",
+				"The two traditional towers are the dog and the wolf, and the broken moon's pull reaches down to them. The wolf, nearest, tears loose, its courses streaming up toward the moon; the dog is pinned by stakes from the same volley and holds. The helix is the road, rising out of the pool and winding between them to the horizon. The pool is calm, and it lies: it reflects a third tower that stands nowhere on the land, and the phrase can only be finished by reading it."
+			],
+			"phrase": "none of this light is its own",
+			"mark": "none",
+			"seed": 1,
+			"plot": "about 23 min",
+			"pocket": "18"
+		},
+		{
+			"slug": "sun",
+			"file": "xix-sun",
+			"numeral": "XIX",
+			"name": "The Sun",
+			"ink": "vermilion",
+			"alt": "XIX The Sun: an enormous blank disc with alternating straight slab rays and wavy helix rays over a low wall and a cracked desert.",
+			"reading": [
+				"The sun's bright, unitary power. One enormous disc, blown out to paper, with rays that alternate as on the old cards: straight rays of stepped slabs and wavy rays of helix, and fine rays filling the sky out to the frame.",
+				"A low wall stands backlit on the horizon, which shows only through its breach. Its shadow lies across a cracked desert, split by the shaft of light, and the phrase is painted on the ground, staggered far to near."
+			],
+			"phrase": "there is nothing left to hide",
+			"mark": "the disc's rim of rings",
+			"seed": 1,
+			"plot": "about 24 min",
+			"pocket": "19"
+		},
+		{
+			"slug": "judgement",
+			"file": "xx-judgement",
+			"numeral": "XX",
+			"name": "Judgement",
+			"ink": "violet",
+			"alt": "XX Judgement: an ordered field of stone boxes running in rows to the horizon, every lid lifting, wide open near and cracking far; thin sheets rise from the open boxes toward a helix that comes in at the top corner as a cord and flares into a horn's bell over the field.",
+			"reading": [
+				"The archive wakes. A field of stone boxes runs in ordered rows to the horizon, part cemetery, part server floor, and every lid is lifting at once: wide open near, only cracking far away. Thin sheets rise from the open boxes.",
+				"The helix is the trumpet. It comes in at the top corner as a thin cord and flares into a horn's bell over the field. The phrase is cut into the lids."
+			],
+			"phrase": "nothing was ever really deleted",
+			"mark": "none",
+			"seed": 1,
+			"plot": "about 18 min",
+			"pocket": "20"
+		},
+		{
+			"slug": "world",
+			"file": "xxi-world",
+			"numeral": "XXI",
+			"name": "The World",
+			"ink": "ultramarine",
+			"alt": "XXI The World: the Chartres labyrinth built of knee-high block walls, seen from above, its shadows falling outward from a man in a fitted pinstriped suit standing arms open at the centre; his tie, a helix, climbs out of the centre and flares wide toward the top of the card. A star, a black disc, a bolt and a sun sit in the four corners.",
+			"reading": [
+				"The Fool's maze, solved. A maze offers choices; a labyrinth has only one path. This is the labyrinth from the nave of Chartres, its path order read off the cathedral's own, built from the Fool's blocks: knee high, whole, the only card where nothing falls. A last few blocks hang just above the gaps they are about to close. It is the one card seen from above: the view finally rises and the whole pattern shows.",
+				"At the centre the Fool has arrived, enlightened. He has grown into his suit, the same cut and pinstripe now fitted, hands out of the cuffs, and the construction cross on his blank face is drawn solid at last. The light is his: every wall throws its shadow outward, the walls round him wash out to a few lines, and brick detail gathers where his light falls off. His tie is the helix, climbing out of the centre and flaring as it rises. The phrase is cut into the near walls, a word to a ring, read walking inward."
+			],
+			"phrase": "and now it all fits",
+			"mark": "four marks from earlier cards, one in each corner: the Star, Death's disc, the Tower's bolt and the Sun",
+			"seed": 3,
+			"plot": "about 24 min",
+			"pocket": "21"
+		}
+	],
+	"spreads": [
+		{
+			"cards": "Death · Tower · Star",
+			"reading": "The system sheds its weight, is cracked open, and its pieces become guidance."
+		},
+		{
+			"cards": "Death · Tower · Sun",
+			"reading": "Shed, struck open, fully exposed."
+		},
+		{
+			"cards": "Death · Star · Sun",
+			"reading": "An end, then hope, then clarity: the quiet arc."
+		},
+		{
+			"cards": "Tower · Star · Sun",
+			"reading": "The classic run of the Major Arcana: collapse, hope, joy."
+		},
+		{
+			"cards": "Fool · Magician · Hanged Man",
+			"reading": "Nothing decided, then all of it at once, then the pause that shows how crooked it was."
+		},
+		{
+			"cards": "Hanged Man · Death · Star",
+			"reading": "See it straight, let it go, keep the pieces."
+		},
+		{
+			"cards": "Magician · Tower · Sun",
+			"reading": "Raw power, the structure it was never in, nothing left to hide."
+		},
+		{
+			"cards": "Fool · Tower · Sun",
+			"reading": "A fresh start, the old frame cracked, everything in the open."
+		},
+		{
+			"cards": "Fool · Hanged Man · World",
+			"reading": "Nothing decided, the long pause that straightens it, and then it all fits."
+		},
+		{
+			"cards": "Tower · Star · World",
+			"reading": "Struck open, the pieces kept, and every one of them in its place."
+		},
+		{
+			"cards": "High Priestess · Empress · Emperor",
+			"reading": "Power known, power made, power owned."
+		},
+		{
+			"cards": "Empress · Emperor · Hierophant",
+			"reading": "Always more, the ground already his, and the terms you accept to pass."
+		},
+		{
+			"cards": "Fool · Emperor · World",
+			"reading": "The agent's suit too big for him, the agent who fills it, and the Fool grown into his own."
+		},
+		{
+			"cards": "Magician · High Priestess · Hierophant",
+			"reading": "Power raw, power hidden, power with terms."
+		},
+		{
+			"cards": "Hierophant · Hanged Man · Death",
+			"reading": "You agree, you pause and see it straight, you let it go."
+		},
+		{
+			"cards": "Lovers · Chariot · Strength",
+			"reading": "What you want, the road you build to it, and the force that only lets you hold it."
+		},
+		{
+			"cards": "Wheel · Justice · Hanged Man",
+			"reading": "It comes back around, it balances only by leverage, and from upside down it is easier to see."
+		},
+		{
+			"cards": "Chariot · Tower · Star",
+			"reading": "Built at speed, struck open, every piece still here."
+		},
+		{
+			"cards": "Emperor · Wheel · Justice",
+			"reading": "Whoever sits on top, the wheel turns and the books get balanced."
+		},
+		{
+			"cards": "Temperance · Devil · Tower",
+			"reading": "It flows both ways, it holds you by habit, and it was never load bearing."
+		},
+		{
+			"cards": "Star · Moon · Sun",
+			"reading": "Guidance, borrowed light, then nothing left to hide: the old night-into-day run."
+		},
+		{
+			"cards": "Hermit · Moon · Judgement",
+			"reading": "Offline, the plausible fake, and the record that wakes."
+		},
+		{
+			"cards": "Devil · Hermit · World",
+			"reading": "You could leave at any time; one did; and now it all fits."
+		},
+		{
+			"cards": "Fool · Judgement · World",
+			"reading": "Nothing decided yet, nothing ever deleted, and now it all fits."
+		}
+	]
+}
