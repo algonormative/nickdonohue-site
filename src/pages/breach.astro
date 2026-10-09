@@ -41,6 +41,9 @@ const cathedralZoom = Object.fromEntries(
 );
 const backZoom = await full(pocket.back);
 
+// Plotter-ready SVGs (one layer per pen, in mm) live in public/breach/svg.
+const svg = (name: string) => `/breach/svg/${name}.svg`;
+
 const title = `Breach · ${SITE_TITLE}`;
 const description =
 	'Breach Cathedral and the Breach Tarot: pen-plotter drawings of slab architecture interrupted by a living helix, all twenty-two Major Arcana, and a pocket deck for print.';
@@ -56,12 +59,12 @@ const description =
 		<main class="breach">
 			<header class="titleblock">
 				<div>
-					<div class="eyebrow"><a href="/ink">plate 2 · Ink</a> · series</div>
+					<div class="eyebrow"><a href="/ink#plotter-art">Ink · All plotter art</a></div>
 					<h1>Breach</h1>
 				</div>
 				<div class="tb mono">
-					<span><b>Sheets</b>{7 + cards.length}</span>
-					<span><b>Paper</b>11 × 17 in</span>
+					<span><b>Works</b>{7 + 2 * cards.length + 1}</span>
+					<span><b>Files</b>SVG</span>
 					<span><b>Source</b><a href="https://github.com/algonormative/hatch3d" target="_blank" rel="noopener">hatch3d</a></span>
 				</div>
 			</header>
@@ -77,6 +80,7 @@ const description =
 				<a href="#tarot">Breach Tarot</a>
 				<a href="#pocket">Pocket deck</a>
 				<a href="#spreads">Spreads</a>
+				<a href="#files">About the SVGs</a>
 			</nav>
 
 			<section id="cathedral" class="part">
@@ -95,7 +99,7 @@ const description =
 								alt="Breach Cathedral: Tower, seed 211. A full-height tower of cantilevered slabs with a twin helix wound through its shaft and a band where the stack shears and falls."
 							/>
 						</button>
-						<figcaption class="mono"><span><b>Tower</b> · seed 211</span><span>about 20 min</span></figcaption>
+						<figcaption class="mono"><span><b>Tower</b> · seed 211</span><span>about 20 min · <a href={svg('breach-cathedral-tower-211-11x17in')} download>SVG</a></span></figcaption>
 					</figure>
 					<div class="text">
 						<p class="kicker">A system interrupted by a living one.</p>
@@ -132,7 +136,7 @@ const description =
 										loading="lazy"
 									/>
 								</button>
-								<figcaption class="mono"><span><b>{c.label}</b> · s{c.seed}</span><span>{c.plot} min</span></figcaption>
+								<figcaption class="mono"><span><b>{c.label}</b> · s{c.seed}</span><span>{c.plot} min · <a href={svg(`breach-${c.key}-11x17in`)} download>SVG</a></span></figcaption>
 							</figure>
 						))
 					}
@@ -156,6 +160,7 @@ const description =
 							<dt>Phrase</dt><dd>this was made by a machine</dd>
 							<dt>Seed</dt><dd>3</dd>
 							<dt>Plot</dt><dd>about 27 min</dd>
+							<dt>SVG</dt><dd><a href={svg('plenipotentiary-11x17in')} download>11 × 17 in</a></dd>
 						</dl>
 					</div>
 					<figure class="sheet-fig">
@@ -168,7 +173,7 @@ const description =
 								loading="lazy"
 							/>
 						</button>
-						<figcaption class="mono"><span><b>Plenipotentiary</b> · seed 3</span><span>about 27 min</span></figcaption>
+						<figcaption class="mono"><span><b>Plenipotentiary</b> · seed 3</span><span>about 27 min · <a href={svg('plenipotentiary-11x17in')} download>SVG</a></span></figcaption>
 					</figure>
 				</div>
 			</section>
@@ -237,6 +242,7 @@ const description =
 									<dt>Flat mark</dt><dd>{card.mark}</dd>
 									<dt>Seed</dt><dd>{card.seed}</dd>
 									<dt>Plot</dt><dd>{card.plot}</dd>
+									<dt>SVG</dt><dd><a href={svg(`breach-tarot-${card.file}-11x17in`)} download>11 × 17 in</a> · <a href={svg(`breach-tarot-${card.file}-70x120mm`)} download>70 × 120 mm</a></dd>
 								</dl>
 							</div>
 						</article>
@@ -259,7 +265,7 @@ const description =
 						</p>
 						<p>
 							These are the print files for a commercial card printer: 300 ppi with bleed, lines thickened so
-							they survive the press, on a printed paper tint. Each also exists as a plotter file.
+							they survive the press, on a printed paper tint. Each card's plotter SVG is linked from its entry above.
 						</p>
 						<p>
 							The back is one drawing, the same either way up: a labyrinth medallion with the helix walking in
@@ -276,7 +282,7 @@ const description =
 								loading="lazy"
 							/>
 						</button>
-						<figcaption class="mono"><span><b>Back</b></span><span>70 × 120 mm</span></figcaption>
+						<figcaption class="mono"><span><b>Back</b></span><span>70 × 120 mm · <a href={svg('breach-tarot-back-70x120mm')} download>SVG</a></span></figcaption>
 					</figure>
 				</div>
 
@@ -314,6 +320,25 @@ const description =
 						))
 					}
 				</ul>
+			</section>
+
+			<section id="files" class="part">
+				<div class="section-head">
+					<h2>About the SVGs</h2>
+					<span class="mono">52 files</span>
+				</div>
+				<div class="text">
+					<p>
+						Every work on this page links its plotter file: the twenty-nine 11 × 17 in sheets, the twenty-two
+						pocket cards and the back. They are the files the plotter draws from, in millimetres at their paper
+						size, with one Inkscape layer per pen, drawn in order: carbon, ultramarine, vermilion, acid and violet,
+						then the fine lettering pen and the border.
+					</p>
+					<p>
+						The colour pens are 0.25 mm and the lettering 0.13 mm. Any pen set works; the layers keep the inks
+						apart.
+					</p>
+				</div>
 			</section>
 
 			<p class="colophon mono">
