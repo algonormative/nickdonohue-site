@@ -1,0 +1,917 @@
+---
+import { Image } from 'astro:assets';
+import BaseHead from '../../components/BaseHead.astro';
+import { SITE_TITLE } from '../../consts';
+import sheet from '../../assets/breach/cathedral/agent-3.webp';
+
+// The moving sheet is drawn from public/breach/plenipotentiary-parts.svg: the print-queue
+// render.svg (phase-garden-2026-10-06-agent-3) with each data-part-id group collapsed to one
+// path at 0.01 mm. Every part becomes a canvas layer that moves on its own; the still render
+// below the canvas is what shows at rest, without script and with reduced motion.
+
+const title = `Plenipotentiary · ${SITE_TITLE}`;
+const description =
+	'Plenipotentiary, from Breach Cathedral, moving: the pen-plotter drawing redrawn live from its parts, with a beam that turns toward you and a censor bar that glitches, tears and lifts.';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} image={sheet} />
+	</head>
+	<body class="pleni">
+		<main>
+			<section class="stage" id="stage" aria-label="Plenipotentiary, animated">
+				<div class="hud top mono">
+					<a href="/breach#cathedral">← Breach</a>
+					<span class="dim">Breach Cathedral · Agent</span>
+					<span class="dim right">seed 3 · v1 9e8eb9d</span>
+				</div>
+
+				<div class="sheet" id="sheet">
+					<Image
+						class="still"
+						src={sheet}
+						widths={[480, 800, 1200]}
+						sizes="(max-width: 700px) 92vw, 560px"
+						alt="Plenipotentiary: a seated pinstripe-suited figure with a helix head and a hatched censor bar over its eyes, on a slab throne inside the cathedral."
+						loading="eager"
+					/>
+					<canvas class="live" id="live" aria-hidden="true"></canvas>
+					<div class="roll" aria-hidden="true"></div>
+					<button class="lift" id="lift" type="button" aria-label="Lift the censor bar"></button>
+				</div>
+
+				<div class="hud bottom mono">
+					<span id="coords" class="coords">x — · y — mm</span>
+					<span id="flash" class="flash" aria-hidden="true"></span>
+					<span class="right signal-wrap">
+						<span class="dim">signal</span>
+						<span class="signal" aria-hidden="true"><i id="signal"></i></span>
+						<button id="pause" class="pause" type="button" aria-pressed="false">Pause</button>
+					</span>
+				</div>
+			</section>
+
+			<article class="notes">
+				<div class="eyebrow mono">Breach Cathedral: Agent</div>
+				<h1>Plenipotentiary</h1>
+				<p>
+					Some otherworldly force showing itself as an agent of the system. A plenipotentiary is an envoy sent with
+					full powers to act for a sovereign.
+				</p>
+				<p>
+					A seated figure in a pinstripe suit, cut into six planes per limb, sits on a slab throne inside the cathedral
+					walls with its legs crossed. Its head is the helix, and the head is the light. A beam leaves its face, and a
+					flat cross-hatched censor bar covers its eyes, the one mark that ignores the camera.
+				</p>
+
+				<h2 class="mono">How it moves</h2>
+				<ul class="moves">
+					<li><b>The walls</b> drift and shift with your cursor, the far slabs most, the figure least.</li>
+					<li><b>The beam</b> breathes, flickers, and turns a few degrees toward you.</li>
+					<li><b>The head</b> wavers like heat over the helix.</li>
+					
+					<li>
+						<b>The censor bar</b> takes none of the camera's moves, and it is the only thing that glitches. Every few
+						seconds it tears, splits into its pen colors and shows the dark behind it, worse if you move fast near it.
+						Come close and it leans to stay between you and the eyes. Click it to lift it.
+					</li>
+				</ul>
+
+				<dl class="facts mono">
+					<dt>Phrase</dt><dd>this was made by a machine</dd>
+					<dt>Seed</dt><dd>3</dd>
+					<dt>Sheet</dt><dd>11 × 17 in, seven pens</dd>
+					<dt>Plot</dt><dd>about 27 min</dd>
+					<dt>SVG</dt><dd><a href="/breach/svg/plenipotentiary-11x17in.svg" download>plot-ready, 11 × 17 in</a></dd>
+				</dl>
+
+				<p class="back mono"><a href="/breach">← All of Breach</a></p>
+			</article>
+		</main>
+
+		<script>
+			// Sheet geometry, in millimetres: an 11 × 17 in page, its art area, and a bleed
+			// around it so tears and ghosts can spill off the paper.
+			const W = 279.4;
+			const H = 431.8;
+			const PAD = 16;
+			const ART = { x0: 20, y0: 21.4, x1: 259.4, y1: 410.6 };
+			const HEAD = { x: 156, y: 100 };
+			const PAPER = '#f4f0e6';
+			const VERMILION = '#d04b3c';
+			const ULTRAMARINE = '#3c49aa';
+			const ROOM = '#0c0e14';
+			// The censor bar and the strip under it, as drawn (rotated quads).
+			const BAR = [
+				[121.318, 103.048], [187.263, 96.443], [188.684, 110.622], [122.738, 117.228],
+			];
+			const STRIP = [
+				[130.915, 118.579], [165.261, 115.138], [165.771, 120.229], [131.425, 123.669],
+			];
+			const CENSOR = { x0: 121.3, y0: 96.4, x1: 188.7, y1: 123.7 };
+			const PHRASE = 'this was made by a machine';
+
+			const GROUPS: Record<string, string[]> = {
+				border: ['finishing-border'],
+				system: ['system-carbon', 'system-ultramarine', 'slogan-lettering'],
+				rays: ['rays-vermilion', 'rays-acid'],
+				throne: ['throne-carbon', 'throne-ultramarine', 'title-lettering'],
+				figure: ['figure-carbon', 'figure-ultramarine', 'figure-acid', 'figure-violet', 'contour-carbon', 'contour-vermilion'],
+				force: ['force-ultramarine', 'force-acid', 'force-violet'],
+				censor: ['censor-carbon'],
+			};
+
+			type Box = { x0: number; y0: number; x1: number; y1: number };
+			type Part = { el: string; box: Box };
+			type Layer = { c: HTMLCanvasElement; x: number; y: number; k: number };
+
+			const stage = document.getElementById('stage')!;
+			const sheetEl = document.getElementById('sheet')!;
+			const cv = document.getElementById('live') as HTMLCanvasElement;
+			const vis = cv.getContext('2d')!;
+			const frame = document.createElement('canvas');
+			const fx = frame.getContext('2d')!;
+			const coordsEl = document.getElementById('coords')!;
+			const signalEl = document.getElementById('signal')!;
+			const flashEl = document.getElementById('flash')!;
+			const pauseBtn = document.getElementById('pause') as HTMLButtonElement;
+			const liftBtn = document.getElementById('lift') as HTMLButtonElement;
+			const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+
+			// Place the lift button over the bar, as fractions of the sheet.
+			Object.assign(liftBtn.style, {
+				left: `${(CENSOR.x0 / W) * 100}%`,
+				top: `${(CENSOR.y0 / H) * 100}%`,
+				width: `${((CENSOR.x1 - CENSOR.x0) / W) * 100}%`,
+				height: `${((CENSOR.y1 - CENSOR.y0) / H) * 100}%`,
+			});
+
+			let parts = new Map<string, Part>();
+			let layers: Record<string, Layer> = {};
+			let ghostR: Layer | null = null;
+			let ghostB: Layer | null = null;
+			let k = 1; // device pixels per millimetre
+			let ready = false;
+			let running = false;
+			let paused = false;
+			let visible = true;
+
+			const boxOf = (d: string): Box => {
+				const n = d.match(/-?\d+\.?\d*/g)!.map(Number);
+				const b = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+				for (let i = 0; i + 1 < n.length; i += 2) {
+					b.x0 = Math.min(b.x0, n[i]); b.x1 = Math.max(b.x1, n[i]);
+					b.y0 = Math.min(b.y0, n[i + 1]); b.y1 = Math.max(b.y1, n[i + 1]);
+				}
+				return b;
+			};
+
+			async function loadParts() {
+				const text = await (await fetch('/breach/plenipotentiary-parts.svg')).text();
+				const doc = new DOMParser().parseFromString(text, 'image/svg+xml');
+				doc.querySelectorAll('path').forEach((p) => {
+					const d = p.getAttribute('d') ?? '';
+					// Plotted widths read thin on screen: nudge them up, keep lettering finer.
+					const sw = Math.max(Number(p.getAttribute('stroke-width')) * 1.2, 0.2);
+					parts.set(p.id, { el: `<path stroke="${p.getAttribute('stroke')}" stroke-width="${sw}" d="${d}"/>`, box: boxOf(d) });
+				});
+			}
+
+			// Rasterise a set of parts to its own canvas, cropped to their bounds.
+			async function raster(ids: string[], scale: number, ink?: string): Promise<Layer> {
+				const box = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+				const els: string[] = [];
+				for (const id of ids) {
+					const p = parts.get(id);
+					if (!p) continue;
+					box.x0 = Math.min(box.x0, p.box.x0); box.y0 = Math.min(box.y0, p.box.y0);
+					box.x1 = Math.max(box.x1, p.box.x1); box.y1 = Math.max(box.y1, p.box.y1);
+					els.push(ink ? p.el.replace(/stroke="[^"]+"/, `stroke="${ink}"`) : p.el);
+				}
+				const x = box.x0 - 1, y = box.y0 - 1;
+				const pw = Math.ceil((box.x1 - box.x0 + 2) * scale);
+				const ph = Math.ceil((box.y1 - box.y0 + 2) * scale);
+				const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${pw}" height="${ph}" viewBox="${x} ${y} ${pw / scale} ${ph / scale}" fill="none" stroke-linecap="round" stroke-linejoin="round">${els.join('')}</svg>`;
+				const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+				const img = new Image();
+				img.src = url;
+				await img.decode();
+				const c = document.createElement('canvas');
+				c.width = pw; c.height = ph;
+				c.getContext('2d')!.drawImage(img, 0, 0);
+				URL.revokeObjectURL(url);
+				return { c, x, y, k: scale };
+			}
+
+			let rasterToken = 0;
+			async function rasterAll() {
+				const token = ++rasterToken;
+				const scale = k;
+				const entries = Object.entries(GROUPS);
+				const built = await Promise.all(entries.map(([, ids]) => raster(ids, scale)));
+				if (token !== rasterToken) return; // a newer resize won
+				layers = Object.fromEntries(entries.map(([name], i) => [name, built[i]]));
+				// The bar's tinted ghosts only show in a glitch, so they can follow the first frame.
+				Promise.all([raster(GROUPS.censor, scale, VERMILION), raster(GROUPS.censor, scale, ULTRAMARINE)]).then(([r, b]) => {
+					if (token === rasterToken) { ghostR = r; ghostB = b; }
+				});
+			}
+
+			function size() {
+				const rect = sheetEl.getBoundingClientRect();
+				const dpr = Math.min(devicePixelRatio || 1, 2);
+				k = (rect.width / W) * dpr;
+				cv.width = frame.width = Math.round((W + 2 * PAD) * k);
+				cv.height = frame.height = Math.round((H + 2 * PAD) * k);
+			}
+
+			// Draw a layer at a millimetre offset. A layer rastered at an older scale is stretched
+			// until its replacement arrives.
+			function put(ctx: CanvasRenderingContext2D, l: Layer | undefined, dx: number, dy: number) {
+				if (!l) return;
+				const s = k / l.k;
+				ctx.drawImage(l.c, (l.x + PAD + dx) * k, (l.y + PAD + dy) * k, l.c.width * s, l.c.height * s);
+			}
+
+			// The helix head, drawn in thin bands that each slide on two sine waves.
+			function putWave(ctx: CanvasRenderingContext2D, l: Layer | undefined, dx: number, dy: number, t: number, amp: number) {
+				if (!l) return;
+				const s = k / l.k;
+				const band = 1.1;
+				const hmm = l.c.height / l.k;
+				for (let y = 0; y < hmm; y += band) {
+					const yy = l.y + y;
+					const off = Math.sin(yy * 0.19 + t * 2.1) * amp + Math.sin(yy * 0.047 - t * 0.8) * amp * 0.7;
+					const sy = y * l.k;
+					const sh = Math.min(band * l.k + 1, l.c.height - sy);
+					if (sh <= 0) break;
+					ctx.drawImage(l.c, 0, sy, l.c.width, sh, (l.x + PAD + dx + off) * k, (yy + PAD + dy) * k, l.c.width * s, sh * s);
+				}
+			}
+
+			const quad = (ctx: CanvasRenderingContext2D, q: number[][], dx: number, dy: number) => {
+				ctx.moveTo((q[0][0] + PAD + dx) * k, (q[0][1] + PAD + dy) * k);
+				for (let i = 1; i < q.length; i++) ctx.lineTo((q[i][0] + PAD + dx) * k, (q[i][1] + PAD + dy) * k);
+				ctx.closePath();
+			};
+
+			// ---- state -------------------------------------------------------------------
+			const pointer = { x: 0, y: 0, inside: false, last: 0, speed: 0 };
+			const cam = { x: 0, y: 0 };
+			let energy = 0;
+			let nextEvent = 2.5;
+			const STRIPS = 18;
+			const glitchDx = new Array<number>(STRIPS).fill(0);
+			let glitchAt = 0;
+			let ghostShift = 0;
+			let dropout = -1;
+			let near = 0;
+			let lean = 0;
+			let tremor = { x: 0, y: 0, at: 0 };
+			let breachAt = -10;
+			const BREACH = 1.4; // seconds
+			const tearDx = new Array<number>(STRIPS).fill(0);
+			const tearDy = new Array<number>(STRIPS).fill(0);
+			let tearStep = -1;
+			let tearBlank = false;
+
+			const toMm = (e: PointerEvent) => {
+				const r = sheetEl.getBoundingClientRect();
+				return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
+			};
+
+			stage.addEventListener('pointermove', (e) => {
+				const m = toMm(e);
+				const now = performance.now() / 1000;
+				if (pointer.inside && now > pointer.last) {
+					const v = Math.hypot(m.x - pointer.x, m.y - pointer.y) / Math.max(now - pointer.last, 1 / 120);
+					pointer.speed = pointer.speed * 0.8 + v * 0.2;
+				}
+				Object.assign(pointer, { x: m.x, y: m.y, inside: true, last: now });
+				const on = m.x >= 0 && m.x <= W && m.y >= 0 && m.y <= H;
+				coordsEl.textContent = on ? `x ${m.x.toFixed(1)} · y ${m.y.toFixed(1)} mm` : 'x — · y — mm';
+			});
+			stage.addEventListener('pointerleave', () => {
+				pointer.inside = false;
+				pointer.speed = 0;
+				coordsEl.textContent = 'x — · y — mm';
+			});
+
+			const lift = () => {
+				const t = performance.now() / 1000;
+				if (t - breachAt < BREACH) return;
+				breachAt = t;
+				energy = 1;
+				tearStep = -1;
+				scramble(PHRASE);
+				// Still (paused or reduced motion): show the bar lifted, then seated, with no motion between.
+				if (!running) {
+					breachAt = t - BREACH * 0.4;
+					frameOnce();
+					setTimeout(() => { if (!running) frameOnce(); }, BREACH * 1000);
+				}
+			};
+			liftBtn.addEventListener('click', lift);
+
+			pauseBtn.addEventListener('click', () => {
+				paused = !paused;
+				pauseBtn.setAttribute('aria-pressed', String(paused));
+				pauseBtn.textContent = paused ? 'Play' : 'Pause';
+				sync();
+			});
+
+			// The phrase resolves out of noise, left to right, then fades.
+			let scrambleTimer = 0;
+			let fadeTimer = 0;
+			function scramble(target: string) {
+				const glyphs = '▚▞▙▟░▒#/\\<>_=+';
+				const start = performance.now();
+				clearInterval(scrambleTimer);
+				clearTimeout(fadeTimer);
+				flashEl.classList.add('on');
+				scrambleTimer = window.setInterval(() => {
+					const p = (performance.now() - start) / 700;
+					const n = Math.floor(p * target.length);
+					flashEl.textContent = target
+						.split('')
+						.map((ch, i) => (i < n || ch === ' ' ? ch : glyphs[(Math.random() * glyphs.length) | 0]))
+						.join('');
+					if (p >= 1) {
+						clearInterval(scrambleTimer);
+						flashEl.textContent = target;
+						fadeTimer = window.setTimeout(() => flashEl.classList.remove('on'), 1800);
+					}
+				}, 40);
+			}
+
+			// ---- drawing -----------------------------------------------------------------
+			function scene(t: number, flare: number) {
+				fx.setTransform(1, 0, 0, 1, 0, 0);
+				fx.clearRect(0, 0, frame.width, frame.height);
+				fx.fillStyle = PAPER;
+				fx.fillRect(PAD * k, PAD * k, W * k, H * k);
+				put(fx, layers.border, 0, 0);
+
+				fx.save();
+				fx.beginPath();
+				fx.rect((ART.x0 + PAD) * k, (ART.y0 + PAD) * k, (ART.x1 - ART.x0) * k, (ART.y1 - ART.y0) * k);
+				fx.clip();
+
+				const cx = -cam.x, cy = -cam.y;
+				put(fx, layers.system, cx * 2.4, cy * 2.4 + Math.sin(t * 0.45) * 0.4);
+
+				// The beam: breathes, flickers, leans toward the viewer, flares when the bar lifts.
+				fx.save();
+				const px = (HEAD.x + PAD + cx * 1.2) * k, py = (HEAD.y + PAD + cy * 1.2) * k;
+				fx.translate(px, py);
+				fx.rotate(((Math.sin(t * 0.37) * 0.6 + cam.x * 2.6) * Math.PI) / 180);
+				fx.scale(1 + flare * 0.04, 1 + flare * 0.04);
+				fx.translate(-px, -py);
+				let a = 0.78 + 0.18 * Math.sin(t * 1.7) + flare * 0.3;
+				if (Math.random() < 0.025) a *= 0.35;
+				fx.globalAlpha = Math.min(1, a);
+				put(fx, layers.rays, cx * 1.2, cy * 1.2);
+				fx.restore();
+
+				put(fx, layers.throne, cx * 0.9, cy * 0.9);
+
+				fx.save();
+				const sx = (128 + PAD) * k, sy = (360 + PAD) * k, breath = 1 + 0.0028 * Math.sin(t * 1.05);
+				fx.translate(sx, sy);
+				fx.scale(1, breath);
+				fx.translate(-sx, -sy);
+				put(fx, layers.figure, cx * 0.5, cy * 0.5);
+				fx.restore();
+
+				putWave(fx, layers.force, cx * 0.7, cy * 0.7, t, 0.22 + flare * 1.2);
+				fx.restore();
+			}
+
+			function composite() {
+				vis.setTransform(1, 0, 0, 1, 0, 0);
+				vis.clearRect(0, 0, cv.width, cv.height);
+				vis.drawImage(frame, 0, 0);
+			}
+
+			// The censor bar is the only thing that glitches. It takes none of the camera's moves, is
+			// drawn last and opaque (it knocks out what is under it), and answers only to the viewer.
+			// It is drawn in thin horizontal strips so any strip can tear on its own.
+			function censor(t: number, dt: number) {
+				const l = layers.censor;
+				if (!l) return;
+				const cxm = (CENSOR.x0 + CENSOR.x1) / 2, cym = (CENSOR.y0 + CENSOR.y1) / 2;
+				let prox = 0;
+				if (pointer.inside) {
+					const dx = Math.max(CENSOR.x0 - pointer.x, 0, pointer.x - CENSOR.x1);
+					const dy = Math.max(CENSOR.y0 - pointer.y, 0, pointer.y - CENSOR.y1);
+					prox = Math.max(0, 1 - Math.hypot(dx, dy) / 45);
+				}
+				near = prox;
+				const target = prox * Math.max(-5, Math.min(5, (pointer.x - cxm) * 0.09));
+				lean += (target - lean) * (1 - Math.exp(-dt * 6));
+				if (t > tremor.at) {
+					tremor = { x: (Math.random() - 0.5) * prox * prox * 0.9, y: (Math.random() - 0.5) * prox * prox * 0.35, at: t + 0.045 };
+				}
+
+				const p = (t - breachAt) / BREACH;
+				const amp = p >= 0 && p < 1 ? Math.sin(Math.PI * Math.min(1, p * 1.2)) : 0;
+				// Lifting is digital, not physical: the tear jumps between held states about 14 times a
+				// second, in bands, sometimes dropping the whole bar for a frame, then snaps back in.
+				if (p >= 0 && p < 1.3) {
+					const step = Math.floor((t - breachAt) * 14);
+					if (step !== tearStep) {
+						tearStep = step;
+						const a = p < 1 ? amp * (0.4 + Math.random() * 0.9) : 0.1;
+						tearBlank = p < 1 && amp > 0.3 && Math.random() < 0.18;
+						const shove = (Math.random() - 0.5) * 30 * a;
+						for (let i = 0; i < STRIPS; i++) {
+							if (i > 0 && Math.random() < 0.5) {
+								tearDx[i] = tearDx[i - 1];
+								tearDy[i] = tearDy[i - 1];
+								continue;
+							}
+							tearDx[i] = Math.random() < 0.8 ? shove + (Math.random() - 0.5) * 96 * a : 0;
+							tearDy[i] = Math.random() < 0.15 ? (Math.random() - 0.5) * 6 * a : 0;
+						}
+					}
+				} else if (tearStep !== -1) {
+					tearStep = -1;
+					tearBlank = false;
+					tearDx.fill(0);
+					tearDy.fill(0);
+				}
+				const base = lean + tremor.x;
+				const e = Math.max(energy, amp);
+
+				// Re-roll the glitch a dozen times a second, not every frame: it reads as signal, not jelly.
+				if (t > glitchAt) {
+					glitchAt = t + 0.05 + Math.random() * 0.07;
+					const g = energy * (0.55 + Math.random() * 0.45);
+					for (let i = 0; i < STRIPS; i++) {
+						glitchDx[i] = Math.random() < g * 0.55 ? (Math.random() - 0.5) * 2 * g * 14 : 0;
+					}
+					ghostShift = g * (0.4 + Math.random() * 1.2);
+					dropout = g > 0.5 && Math.random() < 0.3 ? (Math.random() * STRIPS) | 0 : -1;
+				}
+
+				// Behind the bar there is no face: a hole onto the dark, with the light burning in it.
+				if (e > 0.06) {
+					vis.save();
+					vis.beginPath();
+					quad(vis, BAR, 0, 0);
+					quad(vis, STRIP, 0, 0);
+					vis.clip();
+					vis.globalAlpha = Math.min(1, e * 1.6);
+					vis.fillStyle = ROOM;
+					vis.fillRect((CENSOR.x0 - 2 + PAD) * k, (CENSOR.y0 - 2 + PAD) * k, (CENSOR.x1 - CENSOR.x0 + 4) * k, (CENSOR.y1 - CENSOR.y0 + 4) * k);
+					vis.globalCompositeOperation = 'lighter';
+					vis.globalAlpha = Math.min(1, e * 1.3);
+					const g = vis.createRadialGradient((cxm + PAD) * k, (cym + PAD) * k, 0, (cxm + PAD) * k, (cym + PAD) * k, 30 * k);
+					g.addColorStop(0, 'rgba(250, 248, 170, 1)');
+					g.addColorStop(0.3, 'rgba(240, 128, 111, 0.55)');
+					g.addColorStop(1, 'rgba(60, 73, 170, 0)');
+					vis.fillStyle = g;
+					vis.fillRect((CENSOR.x0 - 2 + PAD) * k, (CENSOR.y0 - 2 + PAD) * k, (CENSOR.x1 - CENSOR.x0 + 4) * k, (CENSOR.y1 - CENSOR.y0 + 4) * k);
+					if (amp > 0) for (let i = 0; i < 3; i++) put(vis, layers.rays, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 1.5);
+					vis.restore();
+				}
+
+				const bh = (CENSOR.y1 - CENSOR.y0) / STRIPS;
+				for (let i = 0; i < STRIPS; i++) {
+					const y0 = CENSOR.y0 + i * bh;
+										const dx = base + tearDx[i] + glitchDx[i];
+					const dy = tremor.y + tearDy[i];
+					vis.save();
+					vis.beginPath();
+					vis.rect(0, (y0 + PAD) * k, cv.width, bh * k + 1);
+					vis.clip();
+					if (i === dropout) {
+						// A dead band with one hot line through it.
+						vis.fillStyle = ROOM;
+						vis.fillRect((CENSOR.x0 - 6 + PAD + dx) * k, (y0 + PAD) * k, (CENSOR.x1 - CENSOR.x0 + 12) * k, bh * k);
+						vis.fillStyle = VERMILION;
+						vis.fillRect((CENSOR.x0 - 6 + PAD + dx) * k, (y0 + bh / 2 + PAD) * k, (CENSOR.x1 - CENSOR.x0 + 12) * k, Math.max(1, 0.25 * k));
+					} else {
+						if (!tearBlank) bar(l, dx, dy);
+						// Chromatic ghosts in a torn strip: the bar, misregistered by pen.
+						if (!tearBlank && (glitchDx[i] !== 0 || tearDx[i] !== 0) && ghostR && ghostB) {
+							vis.globalCompositeOperation = 'multiply';
+							vis.globalAlpha = Math.min(0.9, energy + 0.25);
+							put(vis, ghostR, dx + ghostShift, dy);
+							put(vis, ghostB, dx - ghostShift, dy);
+						}
+					}
+					vis.restore();
+				}
+
+				// When you are close, a scan line sweeps the bar: it is checking.
+				if (prox > 0.15 && amp === 0) {
+					vis.save();
+					vis.beginPath();
+					quad(vis, BAR, base, tremor.y);
+					vis.clip();
+					const sx = CENSOR.x0 + ((t * 0.9) % 1) * (CENSOR.x1 - CENSOR.x0);
+					vis.globalAlpha = Math.min(1, prox * 1.4);
+					vis.fillStyle = VERMILION;
+					vis.fillRect((sx + base + PAD) * k, (CENSOR.y0 + PAD) * k, Math.max(1, 0.35 * k), (CENSOR.y1 - CENSOR.y0) * k);
+					vis.restore();
+				}
+			}
+
+			function bar(l: Layer, dx: number, dy: number) {
+				vis.fillStyle = PAPER;
+				vis.beginPath();
+				quad(vis, BAR, dx, dy);
+				quad(vis, STRIP, dx, dy);
+				vis.fill();
+				put(vis, l, dx, dy);
+			}
+
+			// ---- loop --------------------------------------------------------------------
+			let last = performance.now() / 1000;
+			function tick(nowMs: number) {
+				if (!running) return;
+				const t = nowMs / 1000;
+				const dt = Math.min(0.05, t - last);
+				last = t;
+
+				// The camera follows the cursor; with no cursor it drifts on its own.
+				const idle = !pointer.inside || t - pointer.last > 4;
+				const tx = idle ? Math.sin(t * 0.21) * 0.35 : Math.max(-1, Math.min(1, (pointer.x - W / 2) / (W / 2)));
+				const ty = idle ? Math.sin(t * 0.17 + 1) * 0.25 : Math.max(-1, Math.min(1, (pointer.y - H / 2) / (H / 2)));
+				const ease = 1 - Math.exp(-dt * 2.5);
+				cam.x += (tx - cam.x) * ease;
+				cam.y += (ty - cam.y) * ease;
+
+				// The bar's glitch energy: decays, kicked by random events and by fast moves near it.
+				pointer.speed *= Math.exp(-dt * 4);
+				energy = Math.max(energy * Math.exp(-dt * 2.4), Math.min(0.6, (near * pointer.speed) / 900));
+				if (t > nextEvent) {
+					const kick = 0.3 + Math.random() * 0.55;
+					energy = Math.min(1, energy + kick);
+					if (kick > 0.7) scramble(PHRASE);
+					nextEvent = t + 2.2 + Math.random() * 5.5;
+				}
+				const bp = (t - breachAt) / BREACH;
+				const flare = bp >= 0 && bp < 1 ? Math.sin(Math.PI * bp) : 0;
+				if (flare > 0) energy = Math.max(energy, 0.35 + flare * 0.5);
+
+				scene(t, flare);
+				composite();
+				censor(t, dt);
+				signalEl.style.width = `${Math.round(energy * 100)}%`;
+				requestAnimationFrame(tick);
+			}
+
+			// One still frame, used when paused or with reduced motion.
+			function frameOnce() {
+				const t = performance.now() / 1000;
+				const save = energy;
+				energy = 0;
+				scene(t, 0);
+				composite();
+				censor(t, 0);
+				energy = save;
+			}
+
+			function sync() {
+				const should = ready && visible && !paused && !reduce.matches && !document.hidden;
+				if (should && !running) {
+					running = true;
+					last = performance.now() / 1000;
+					requestAnimationFrame(tick);
+				} else if (!should && running) {
+					running = false;
+				}
+				if (ready && !running) frameOnce();
+			}
+
+			new IntersectionObserver((entries) => {
+				visible = entries.some((e) => e.isIntersecting);
+				sync();
+			}).observe(stage);
+			document.addEventListener('visibilitychange', sync);
+			reduce.addEventListener('change', sync);
+
+			let resizeTimer = 0;
+			addEventListener('resize', () => {
+				clearTimeout(resizeTimer);
+				resizeTimer = window.setTimeout(async () => {
+					size();
+					if (!ready) return;
+					frameOnce();
+					await rasterAll();
+					if (!running) frameOnce();
+				}, 180);
+			});
+
+			(async () => {
+				try {
+					size();
+					await loadParts();
+					await rasterAll();
+					ready = true;
+					sheetEl.classList.add('is-live');
+					performance.mark('plenipotentiary-live');
+					sync();
+				} catch (err) {
+					// The still render stays up.
+					console.warn('plenipotentiary: live layer unavailable', err);
+				}
+			})();
+		</script>
+	</body>
+</html>
+
+<style>
+	/* One world: a dark viewing room, the sheet lit in it. Colors are fixed, not themed. */
+	:global(html) {
+		color-scheme: dark;
+		background: #0c0e14;
+	}
+	body.pleni {
+		--room: #0c0e14;
+		--room-2: #141826;
+		--hud: #c9ccd4;
+		--hud-dim: #7d8394;
+		--rule: #262b3b;
+		--verm: #f0806f;
+		--paper: #f4f0e6;
+		background: var(--room);
+		color: var(--hud);
+	}
+	main {
+		padding: 0;
+		width: auto;
+		max-width: none;
+	}
+	.mono {
+		font-family: var(--font-mono);
+	}
+
+	.stage {
+		position: relative;
+		min-height: 100svh;
+		display: grid;
+		place-items: center;
+		padding: 3.4rem 16px;
+		box-sizing: border-box;
+		overflow: hidden;
+		cursor: crosshair;
+		background: radial-gradient(ellipse at 50% 42%, var(--room-2), var(--room) 70%);
+	}
+
+	.sheet {
+		position: relative;
+		aspect-ratio: 279.4 / 431.8;
+		height: min(calc(100svh - 6.8rem), calc((100vw - 32px) * 1.5455));
+		max-width: calc(100vw - 32px);
+		box-shadow:
+			0 0 0 1px rgba(255, 255, 255, 0.04),
+			0 30px 90px rgba(0, 0, 0, 0.6);
+	}
+	.still {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	/* The canvas carries a 16 mm bleed on every side so tears can leave the paper. */
+	.live {
+		position: absolute;
+		left: -5.7266%;
+		top: -3.7054%;
+		width: 111.4531%;
+		height: 107.4108%;
+		opacity: 0;
+		transition: opacity 0.8s ease;
+		pointer-events: none;
+	}
+	.sheet.is-live .live {
+		opacity: 1;
+	}
+	.sheet.is-live {
+		box-shadow: none;
+	}
+	/* Hide the still only once the canvas has faded over it; tears must open onto the room. */
+	.sheet.is-live .still {
+		visibility: hidden;
+		transition: visibility 0s 0.8s;
+	}
+	/* Scanlines and a slow refresh band over the whole bleed. */
+	.sheet::after {
+		content: '';
+		position: absolute;
+		inset: -3.7% -5.7%;
+		pointer-events: none;
+		background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(12, 14, 20, 0.07) 2px 3px);
+	}
+	.roll {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+	.roll::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 14%;
+		top: -14%;
+		background: linear-gradient(to bottom, transparent, rgba(255, 250, 235, 0.06), transparent);
+		animation: roll 7.5s linear infinite;
+	}
+	@keyframes roll {
+		to {
+			transform: translateY(820%);
+		}
+	}
+
+	.lift {
+		position: absolute;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		cursor: pointer;
+		transform: rotate(-5.7deg);
+		border-radius: 2px;
+	}
+	.lift:focus-visible {
+		outline: 1px solid var(--verm);
+		outline-offset: 3px;
+	}
+
+	.hud {
+		position: absolute;
+		left: 16px;
+		right: 16px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.4rem 1.2rem;
+		font-size: 0.66rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--hud);
+		z-index: 2;
+	}
+	.hud.top {
+		top: 1rem;
+	}
+	.hud.bottom {
+		bottom: 1rem;
+	}
+	.hud .right {
+		margin-left: auto;
+	}
+	.hud .dim {
+		color: var(--hud-dim);
+	}
+	.hud a {
+		color: var(--hud);
+		text-decoration: none;
+		border-bottom: 1px solid var(--rule);
+	}
+	.hud a:hover {
+		color: var(--verm);
+		border-color: var(--verm);
+	}
+	.coords {
+		font-variant-numeric: tabular-nums;
+		min-width: 15ch;
+		color: var(--hud-dim);
+	}
+	.flash {
+		color: var(--verm);
+		opacity: 0;
+		transition: opacity 0.4s;
+		text-transform: lowercase;
+		letter-spacing: 0.12em;
+	}
+	.flash.on {
+		opacity: 1;
+	}
+	.signal-wrap {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+	.signal {
+		display: inline-block;
+		width: 4.5rem;
+		height: 3px;
+		background: var(--rule);
+		position: relative;
+	}
+	.signal i {
+		position: absolute;
+		inset: 0 auto 0 0;
+		width: 0;
+		background: var(--verm);
+	}
+	.pause {
+		font: inherit;
+		letter-spacing: inherit;
+		text-transform: inherit;
+		color: var(--hud);
+		background: transparent;
+		border: 1px solid var(--rule);
+		padding: 0.25rem 0.55rem;
+		cursor: pointer;
+	}
+	.pause:hover,
+	.pause:focus-visible {
+		border-color: var(--verm);
+		color: var(--verm);
+	}
+
+	.notes {
+		max-width: 62ch;
+		margin: 0 auto;
+		padding: 3.5rem 16px 5rem;
+		border-top: 1px solid var(--rule);
+	}
+	.eyebrow {
+		font-size: 0.7rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--hud-dim);
+	}
+	.notes h1 {
+		font-family: var(--font-display);
+		font-size: var(--step-5);
+		line-height: 1;
+		margin: 0.4rem 0 1.4rem;
+		color: #eef0f4;
+		text-wrap: balance;
+	}
+	.notes h2 {
+		font-size: 0.72rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--hud-dim);
+		margin: 2.4rem 0 0.8rem;
+	}
+	.notes p,
+	.notes li {
+		color: var(--hud);
+	}
+	.notes b {
+		color: #eef0f4;
+	}
+	.moves {
+		padding-left: 1.1rem;
+		display: grid;
+		gap: 0.4rem;
+	}
+	.moves li::marker {
+		color: var(--verm);
+	}
+	.facts {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.35rem 1.4rem;
+		font-size: 0.78rem;
+		margin: 2.4rem 0 0;
+		padding-top: 1.2rem;
+		border-top: 1px solid var(--rule);
+	}
+	.facts dt {
+		color: var(--hud-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+	}
+	.facts dd {
+		margin: 0;
+	}
+	.notes a {
+		color: var(--hud);
+		text-decoration-color: var(--verm);
+		text-underline-offset: 3px;
+	}
+	.notes a:hover {
+		color: var(--verm);
+	}
+	.back {
+		margin-top: 2.4rem;
+		font-size: 0.78rem;
+	}
+
+	@media (max-width: 560px) {
+		.hud .dim:not(.right) {
+			display: none;
+		}
+		.signal {
+			width: 2.8rem;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.roll::before {
+			animation: none;
+			display: none;
+		}
+	}
+</style>
