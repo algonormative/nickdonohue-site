@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
@@ -7,6 +8,18 @@ import Hatch from '../components/Hatch.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import domains from '../data/domains.json';
+import agent from '../assets/breach/cathedral/agent-3.webp';
+import tower from '../assets/breach/cathedral/tower-211.webp';
+import c033 from '../assets/breach/cathedral/cathedral-c033.webp';
+import c001 from '../assets/breach/cathedral/cathedral-c001.webp';
+
+// The promoted art set: newest plotter work, shown above the plates.
+const promoSheets = [
+	{ src: agent, href: '/breach/plenipotentiary', label: 'Plenipotentiary', alt: 'Plenipotentiary: a pinstripe-suited figure with a helix head and a censor bar over its eyes, on a slab throne.' },
+	{ src: tower, href: '/breach#cathedral', label: 'Tower', alt: 'Breach Cathedral, Tower: a full-height stack of cantilevered slabs with a helix wound through it.' },
+	{ src: c033, href: '/breach#cathedral', label: 'c033', alt: 'Breach Cathedral c033: slab architecture with a ribbed helix membrane looping through it.' },
+	{ src: c001, href: '/breach#cathedral', label: 'c001', alt: 'Breach Cathedral c001: slab architecture with a ribbed helix membrane looping through it.' },
+];
 
 const published = ({ data }: { data: { draft: boolean } }) =>
 	import.meta.env.PROD ? !data.draft : true;
@@ -53,6 +66,35 @@ const plateBlurbs: Record<string, string> = {
 						</ul>
 					</div>
 				</div>
+
+				<section class="promo" aria-labelledby="promo-title">
+					<div class="promo-copy">
+						<span class="eyebrow">New art set · Ink</span>
+						<h2 id="promo-title"><a href="/breach#cathedral">Breach Cathedral</a></h2>
+						<p>
+							Pen-plotter drawings of a monumental slab stack interrupted by a living helix, each sheet hiding the
+							phrase <em>this was made by a machine</em>. The newest, Plenipotentiary, seats an agent of the system
+							on a slab throne, and now moves.
+						</p>
+						<span class="promo-meta mono">7 sheets · 11 × 17 in · SVG</span>
+						<div class="promo-links">
+							<a class="go" href="/breach#cathedral">See the set →</a>
+							<a class="go" href="/breach/plenipotentiary">Plenipotentiary, live →</a>
+						</div>
+					</div>
+					<ul class="promo-sheets">
+						{
+							promoSheets.map((sheet) => (
+								<li>
+									<a href={sheet.href}>
+										<Image src={sheet.src} widths={[200, 400]} sizes="(max-width: 720px) 30vw, 220px" alt={sheet.alt} />
+										<span class="mono">{sheet.label}</span>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</section>
 
 				<div class="plates">
 					{
@@ -167,6 +209,104 @@ const plateBlurbs: Record<string, string> = {
 		font-size: 1rem;
 		line-height: 1.85;
 		margin: 0;
+	}
+
+	.promo {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+		gap: var(--space-l);
+		align-items: center;
+		padding: var(--space-l) var(--space-m);
+	}
+	.promo-copy {
+		display: grid;
+		gap: var(--space-2xs);
+		justify-items: start;
+		min-width: 0;
+	}
+	.promo h2 {
+		margin: 0;
+		font-size: clamp(1.9rem, 4vw, 2.6rem);
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1.05;
+		text-wrap: balance;
+	}
+	.promo h2 a {
+		color: var(--fg);
+		text-decoration: none;
+	}
+	.promo p {
+		margin: 0;
+		max-width: 46ch;
+	}
+	.promo-meta {
+		font-size: 0.75rem;
+		color: var(--muted);
+	}
+	.promo-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2xs) var(--space-m);
+		margin-top: var(--space-3xs);
+	}
+	.promo-links .go {
+		font-weight: 700;
+	}
+	.promo-sheets {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr));
+		align-items: end;
+		gap: var(--space-s);
+	}
+	.promo-sheets li {
+		min-width: 0;
+	}
+	.promo-sheets a {
+		display: grid;
+		gap: var(--space-3xs);
+		color: var(--muted);
+		text-decoration: none;
+		font-size: 0.7rem;
+		min-width: 0;
+	}
+	.promo-sheets span {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.promo-sheets img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 279.4 / 431.8;
+		object-fit: cover;
+		border: 1px solid var(--rule);
+		transition: transform 0.25s ease;
+	}
+	.promo-sheets a:hover img,
+	.promo-sheets a:focus-visible img {
+		transform: translateY(-4px);
+	}
+	.promo-sheets a:hover span {
+		color: var(--fg);
+	}
+	@media (max-width: 760px) {
+		.promo {
+			grid-template-columns: 1fr;
+			padding: var(--space-m) var(--space-s);
+		}
+		.promo-sheets {
+			gap: var(--space-2xs);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.promo-sheets img {
+			transition: none;
+		}
 	}
 
 	.plates {
