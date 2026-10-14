@@ -56,34 +56,13 @@ const description =
 			<article class="notes">
 				<div class="eyebrow mono">Breach Cathedral: Agent</div>
 				<h1>Plenipotentiary</h1>
-				<p>
-					Some otherworldly force showing itself as an agent of the system. A plenipotentiary is an envoy sent with
-					full powers to act for a sovereign.
-				</p>
-				<p>
-					A seated figure in a pinstripe suit, cut into six planes per limb, sits on a slab throne inside the cathedral
-					walls with its legs crossed. Its head is the helix, and the head is the light. A beam leaves its face, and a
-					flat cross-hatched censor bar covers its eyes, the one mark that ignores the camera.
-				</p>
-
-				<h2 class="mono">How it moves</h2>
-				<ul class="moves">
-					<li><b>The walls</b> drift and shift with your cursor, the far slabs most, the figure least.</li>
-					<li><b>The beam</b> breathes, flickers, and turns a few degrees toward you.</li>
-					<li><b>The head</b> wavers like heat over the helix.</li>
-					
-					<li>
-						<b>The censor bar</b> takes none of the camera's moves, and it is the only thing that glitches. Every few
-						seconds it tears, splits into its pen colors and shows the dark behind it, worse if you move fast near it.
-						Come close and it leans to stay between you and the eyes. Click it to lift it.
-					</li>
-				</ul>
+				<p>An envoy sent with full powers to act for a sovereign.</p>
+				<p class="hint mono">Move the cursor. Click the censor bar.</p>
 
 				<dl class="facts mono">
 					<dt>Phrase</dt><dd>this was made by a machine</dd>
 					<dt>Seed</dt><dd>3</dd>
 					<dt>Sheet</dt><dd>11 × 17 in, seven pens</dd>
-					<dt>Plot</dt><dd>about 27 min</dd>
 					<dt>SVG</dt><dd><a href="/breach/svg/plenipotentiary-11x17in.svg" download>plot-ready, 11 × 17 in</a></dd>
 				</dl>
 
@@ -848,13 +827,6 @@ const description =
 		color: #eef0f4;
 		text-wrap: balance;
 	}
-	.notes h2 {
-		font-size: 0.72rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--hud-dim);
-		margin: 2.4rem 0 0.8rem;
-	}
 	.notes p,
 	.notes li {
 		color: var(--hud);
@@ -862,13 +834,11 @@ const description =
 	.notes b {
 		color: #eef0f4;
 	}
-	.moves {
-		padding-left: 1.1rem;
-		display: grid;
-		gap: 0.4rem;
-	}
-	.moves li::marker {
-		color: var(--verm);
+	.hint {
+		font-size: 0.75rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--hud-dim);
 	}
 	.facts {
 		display: grid;
